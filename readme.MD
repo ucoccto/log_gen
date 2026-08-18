@@ -112,7 +112,7 @@ malformed_json
 ```
 ```
               Data Source Simulator
-              Fargate + Python/Faker
+              Fargate + Python/Faker /  E`L`K, E`F`K
                       │ <- (다양한 출력 방향으로 전개)
     ┌─────────────────┼─────────────────┐
     │                 │                 │
@@ -125,7 +125,7 @@ File/Batch         AWS Stream       Event Stream
             Bronze Layer
                   │
           ETL / ELT Processing
-      Pandas / Polars / Spark
+      Pandas / Polars / Spark   <- Ai에게 요청해서 구성, 챕터 4에서 진행
                   │
                 Silver
                   │
@@ -133,4 +133,15 @@ File/Batch         AWS Stream       Event Stream
                   │
     Athena / OpenSearch / BI
 ```
+```
+
+# 제너레이터 구조 및 설치
+```
+~/generator
+ L app
+    L domains
+      L *.py        : 4개 도메인에 대한 로그 생성 메인 제너레이터 함수
+    L *.py          : main.py 로그 생성기 메인코드, 각종 기능 처리
+ L Dockerfile       : 컨테이너 기반이 되는 이미지 생성용, ECR 푸시됨
+ L requirements.txt : 필요 패키지
 ```
