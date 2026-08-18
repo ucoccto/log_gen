@@ -136,6 +136,7 @@ File/Batch         AWS Stream       Event Stream
 ```
 
 # 제너레이터 구조 및 설치
+- 구조
 ```
 ~/generator
  L app
@@ -144,4 +145,10 @@ File/Batch         AWS Stream       Event Stream
     L *.py          : main.py 로그 생성기 메인코드, 각종 기능 처리
  L Dockerfile       : 컨테이너 기반이 되는 이미지 생성용, ECR 푸시됨
  L requirements.txt : 필요 패키지
+```
+
+- 설치
+```
+# 루트 위치에서
+pip install -r generator/requirements.txt
 ```
