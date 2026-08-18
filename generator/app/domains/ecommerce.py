@@ -10,6 +10,8 @@ import uuid
 EVENTS  = ["product_view", "search", "add_to_cart", "checkout", "order_created", "payment_completed"]
 # 가중치 부여하여 이벤트의 발생 빈도 조절 => 가중치 => 인사이트등 도메인 분석을 하여 설계 => 현재는 가정
 WEIGHTS = [34, 20, 17, 9, 11, 9]
+# 카테고리 정의
+CATEGORIES = ['food', 'fashion', 'beauty', 'electronics', 'home', 'sports']
 
 def generate(fake:Faker, *, timezone_name:str, envrionment:str, run_id:str) -> dict:
   # 1. 이벤트 타입 선택
@@ -18,6 +20,11 @@ def generate(fake:Faker, *, timezone_name:str, envrionment:str, run_id:str) -> d
   user_id    = f"usr_{random.randint(100000, 999999)}" # 중복성 고려하여 랜덤 활용(uuid x)
   # 3. 요청 흐름을 구분하는 세션 ID (고유함)
   session_id = uuid.uuid4().hex[:20] # 중복되지 않는 해시값 20자리수 제공
+  # 4. product_id 제품 아이디 중복 가능성 있음
+  product_id = f"prd_{random.randint(100000, 999999)}"
+  # 5. 제품의 주문 수량, 제품 1개를 주문하는 쪽에 가중치 높게 구성
+  quantity   = random.choices([1,2,3,4], weights=[70, 20, 7, 3], k=1)[0]
+
 
   return {
     # 공용 데이터
@@ -26,6 +33,9 @@ def generate(fake:Faker, *, timezone_name:str, envrionment:str, run_id:str) -> d
     # 도메인별 커스텀 데이터 
     "data": {
       "user_id": user_id,
-      "session_id": session_id
+      "session_id": session_id,
+      "product_id": product_id,
+      "category"  : random.choices(CATEGORIES),
+      "quantity"  : quantity
     }
   }
