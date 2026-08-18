@@ -16,7 +16,7 @@ resource "aws_ecs_task_definition" "generator" {
   network_mode = "awsvpc"
 
   # cpu 사용(자원)
-  cpu = tostring(var.task_cpu)
+  cpu    = tostring(var.task_cpu)
   memory = tostring(var.task_memory)
 
   # 권한 (ecs 테스크(기본), push, 로그기록)
@@ -24,17 +24,17 @@ resource "aws_ecs_task_definition" "generator" {
 
   # 서버리스 => 컴퓨팅 자원의 운영쳬게
   runtime_platform {
-    operating_system_family = "LINUX" # 컨테이너 실행 환경
-    cpu_architecture = "X86_64"       # 아킥텍쳐
+    operating_system_family = "LINUX"  # 컨테이너 실행 환경
+    cpu_architecture        = "X86_64" # 아킥텍쳐
   }
 
   # 컨테이너 상세 정의서(명세서)
   container_definitions = jsonencode([
     {
       # 컨테이너 이름
-      name      = "log-generator"
+      name = "log-generator"
       # 이미지명
-      image     = "${aws_ecr_repository.generator.repository_url}:${var.image_tag}"
+      image = "${aws_ecr_repository.generator.repository_url}:${var.image_tag}"
       # 해당 컨테이너가 본 task의 필수 컨테이너다 선언
       essential = true
 
@@ -63,8 +63,8 @@ resource "aws_ecs_task_definition" "generator" {
         # 옵션
         options = {
           # /ecs/de-ai-xx-loggen 그룹으로 전달
-          "awslogs-group"         = aws_cloudwatch_log_group.generator.name
-          "awslogs-region"        = var.aws_region
+          "awslogs-group"  = aws_cloudwatch_log_group.generator.name
+          "awslogs-region" = var.aws_region
           # generator라는 문자열 프리픽스 세팅
           "awslogs-stream-prefix" = "generator"
         }
