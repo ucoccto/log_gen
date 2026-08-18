@@ -60,6 +60,6 @@
     "latency_ms": 287,
     "response_bytes": 3590
   },
-  "data": {... domain specific ...}
+  "data": {... domain specific ...}  <- 도메인별로 커스텀 구성
 }
 ```
