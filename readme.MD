@@ -179,8 +179,9 @@ pip install -r generator/requirements.txt
 
 ```
 
-- setup.bat
+- setup.bat (로컬 PC에서 Docker Client 구동후 진행)
 ```
+  # 처리 흐름
   Terraform init
       ↓
   Terraform apply
@@ -193,12 +194,17 @@ pip install -r generator/requirements.txt
   Docker 이미지 Build
       ↓
   ECR에 latest 이미지 Push
+
+  # 실행
+  ./script/setup.bat
 ```
 
 
 
 - run-generator.bat
   - AWS fargate에서 진행
+  - 수정 (119라인)
+    if errorlevel 1 set "LOG_GROUP=/ecs/de-ai-25-loggen" => 본인 주소로 변경
 ```
   # 전체 옵션
   scripts\run-generator.bat [DOMAIN] [DURATION] [BASE_RPS] [CORRUPTION_RATE] [TASK_COUNT] [REGION] [TIME_SCALE]
@@ -217,4 +223,33 @@ pip install -r generator/requirements.txt
   Python 로그 생성기 작동
   ↓
   CloudWatch에 로그 저장
+
+
+  # 명령어 샘플
+  scripts\run-generator.bat ecommerce 2 5 0.05 1 ap-northeast-2 1    
+  ---
+  ============================================================
+  Fargate synthetic log generator
+  ============================================================
+  Run ID          : loggen-2251219129-932
+  Domain          : ecommerce
+  Duration        : 2s
+  Base RPS        : 5
+  Time scale      : 1
+  Corruption rate : 0.05
+  Tasks           : 1
+  Region          : ap-northeast-2
+  Cluster         : de-ai-25-loggen-cluster
+
+  -----------------------------------------------------------------------------------------------------------       
+  |                                                 RunTask                                                 |
+  +---------------------------------------------------------------------------------------------------------+
+  |  arn:aws:ecs:ap-northeast-2:827913617635:task/de-ai-25-loggen-cluster/c79e8eb92b65483cb216e63afcee22d8  |
+  +---------------------------------------------------------------------------------------------------------+
+
+
+  Task started.
+  Follow generated logs:
+    aws logs tail "/ecs/de-ai-25-loggen" --follow --region "ap-northeast-2"
 ```
+
