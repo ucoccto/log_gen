@@ -37,6 +37,7 @@
 
 # 로그 생성기 (~/generator)
 ## 로그 포멧 (공통)
+- 서비스 요청에 따른 처리가 완료된후 로그로 기록하는 최종 필드를 포함한 데이터 샘플
 ```json
 {
   "schema_version": "1.0",
@@ -63,3 +64,13 @@
   "data": {... domain specific ...}  <- 도메인별로 커스텀 구성
 }
 ```
+
+## 지원 도메인 및 이벤트 정의
+- domain으로 카테고리 설정
+
+| DOMAIN | 주요 이벤트 예시 |
+|---|---|
+| `ecommerce` | product_view, search, add_to_cart, checkout, order_created, payment_completed |
+| `finance` | account_login, balance_inquiry, card_payment, transfer, deposit, withdrawal |
+| `smartfactory` | sensor_reading, equipment_state, quality_inspection, alarm, maintenance_event |
+| `game` | login, session_heartbeat, match_started, match_finished, item_purchase, quest_completed |
