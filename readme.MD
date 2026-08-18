@@ -152,3 +152,21 @@ File/Batch         AWS Stream       Event Stream
 # 루트 위치에서
 pip install -r generator/requirements.txt
 ```
+
+# 스크립트 
+- setup.bat
+```
+  Terraform init
+      ↓
+  Terraform apply
+      ↓
+  ECR Repository 생성
+  ECS/Fargate 관련 인프라 생성
+      ↓
+  AWS ECR 로그인
+      ↓
+  Docker 이미지 Build
+      ↓
+  ECR에 latest 이미지 Push
+```
+
