@@ -38,6 +38,9 @@ def generate(fake:Faker, *, timezone_name:str, envrionment:str, run_id:str) -> d
   }
   # 메소드, 경로, 지연시간(중간값)
   method, path, median_latency = routes[ event_type ]
+  # 응답코드 ( 400 이하이면 모두 성공, 그 이상이면 오류)
+  status = 
+
 
   return {
     # 공용 데이터
