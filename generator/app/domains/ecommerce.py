@@ -24,7 +24,8 @@ def generate(fake:Faker, *, timezone_name:str, envrionment:str, run_id:str) -> d
   product_id = f"prd_{random.randint(100000, 999999)}"
   # 5. 제품의 주문 수량, 제품 1개를 주문하는 쪽에 가중치 높게 구성
   quantity   = random.choices([1,2,3,4], weights=[70, 20, 7, 3], k=1)[0]
-
+  # 6. 개당 단가 -> 임의 구성
+  unit_price = random.randrange(5000, 300000, 100)
 
   return {
     # 공용 데이터
@@ -36,6 +37,9 @@ def generate(fake:Faker, *, timezone_name:str, envrionment:str, run_id:str) -> d
       "session_id": session_id,
       "product_id": product_id,
       "category"  : random.choices(CATEGORIES),
-      "quantity"  : quantity
+      "quantity"  : quantity,
+      "unit_price": unit_price,
+      "currency"  : "KRW", # 가격 단가,
+      "campaign"  : random.choices([None, None, None, "summer_sale", "coupon", "winter_sale"])
     }
   }
