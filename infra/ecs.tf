@@ -27,5 +27,39 @@ resource "aws_ecs_task_definition" "generator" {
     operating_system_family = "LINUX" # 컨테이너 실행 환경
     cpu_architecture = "X86_64"       # 아킥텍쳐
   }
-  
+
+  # 컨테이너 상세 정의서(명세서)
+  container_definitions = jsonencode([
+    {
+      name      = "log-generator"
+      image     = "${aws_ecr_repository.generator.repository_url}:${var.image_tag}"
+      essential = true
+
+      environment = [
+        { name = "DOMAIN", value = "ecommerce" },
+        { name = "DURATION_SECONDS", value = "300" },
+        { name = "MAX_EVENTS", value = "0" },
+        { name = "BASE_RPS", value = "2.0" },
+        { name = "TIME_SCALE", value = "1.0" },
+        { name = "CORRUPTION_RATE", value = "0.03" },
+        { name = "INCLUDE_CORRUPTION_LABEL", value = "false" },
+        { name = "OUTPUT_MODE", value = "stdout" },
+        { name = "LOG_FILE", value = "/tmp/generated-logs.jsonl" },
+        { name = "TIMEZONE", value = "Asia/Seoul" },
+        { name = "FAKER_LOCALE", value = "ko_KR" },
+        { name = "ENVIRONMENT", value = "simulation" },
+        { name = "RUN_ID", value = "manual" }
+      ]
+
+      logConfiguration = {
+        logDriver = "awslogs"
+
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.generator.name
+          "awslogs-region"        = var.aws_region
+          "awslogs-stream-prefix" = "generator"
+        }
+      }
+    }
+  ])
 }
