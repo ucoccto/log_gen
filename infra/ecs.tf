@@ -31,10 +31,14 @@ resource "aws_ecs_task_definition" "generator" {
   # 컨테이너 상세 정의서(명세서)
   container_definitions = jsonencode([
     {
+      # 컨테이너 이름
       name      = "log-generator"
+      # 이미지명
       image     = "${aws_ecr_repository.generator.repository_url}:${var.image_tag}"
+      # 해당 컨테이너가 본 task의 필수 컨테이너다 선언
       essential = true
 
+      # 환경변수 -> 로그 생성기의 구동 설정값(외부에서 통제)
       environment = [
         { name = "DOMAIN", value = "ecommerce" },
         { name = "DURATION_SECONDS", value = "300" },
@@ -51,12 +55,17 @@ resource "aws_ecs_task_definition" "generator" {
         { name = "RUN_ID", value = "manual" }
       ]
 
+      # cloudwatch로 로그 전송 설정
       logConfiguration = {
+        # cloudwatch logs용으로 로그 드라이버 지정
         logDriver = "awslogs"
 
+        # 옵션
         options = {
+          # /ecs/de-ai-xx-loggen 그룹으로 전달
           "awslogs-group"         = aws_cloudwatch_log_group.generator.name
           "awslogs-region"        = var.aws_region
+          # generator라는 문자열 프리픽스 세팅
           "awslogs-stream-prefix" = "generator"
         }
       }
