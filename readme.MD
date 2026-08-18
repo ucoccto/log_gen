@@ -24,3 +24,42 @@
 - ecr.tf        : 로그 생성기 (파이썬 코드) -> Docker 이미지로 생성하여 저장할 저장소
 - ecs.tf        : ECS 클러스터와 Fargate Task Definition등이 구동되는 실행 환경 제공 -> 1회성 (상시 운영 x)
 - outputs.tf    : 생성후 각종 정보 출력
+
+# 인프라 구성
+```
+> ~/infra
+> terraform init
+> terraform fmt
+> terraform vaildate
+> terraform plan
+> terraform apply
+```
+
+# 로그 생성기 (~/generator)
+## 로그 포멧 (공통)
+```json
+{
+  "schema_version": "1.0",
+  "record_type": "application_log",
+  "event_id": "...",
+  "trace_id": "...",
+  "run_id": "...",
+  "occurred_at": "2026-08-12T16:30:11.123+09:00",
+  "generated_at_utc": "2026-08-12T07:30:11.123+00:00",
+  "domain": "ecommerce",
+  "event_type": "order_created",
+  "service": {...},
+  "client": {...},
+  "request": {
+    "method": "POST",
+    "path": "/api/orders",
+    "request_bytes": 1234
+  },
+  "response": {
+    "status_code": 201,
+    "latency_ms": 287,
+    "response_bytes": 3590
+  },
+  "data": {... domain specific ...}
+}
+```
