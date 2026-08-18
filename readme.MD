@@ -170,3 +170,13 @@ pip install -r generator/requirements.txt
   ECR에 latest 이미지 Push
 ```
 
+- run-local.bat
+- 로컬 PC에서 로그 생성 (로컬 테스트)
+```
+  # 문법
+  scripts\run-local.bat [DOMAIN] [DURATION] [RPS] [CORRUPTION] [OUTPUT] [TIME_SCALE]
+
+  # 샘플 
+  scripts\run-local.bat finance 60 5 0.05 both 1
+```
+
