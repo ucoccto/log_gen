@@ -178,5 +178,26 @@ pip install -r generator/requirements.txt
 
   # 샘플 
   scripts\run-local.bat finance 60 5 0.05 both 1
+
+  # 해석
+  finance 도메인 로그 생성
+  ↓
+  60초 동안 실행
+  ↓
+  평균 5 RPS 속도로 생성된다
+  ↓
+  5% 오엽 데이터를 구성
+  ↓
+  출력은 stdout, file, both(둘다)
+  file은 output 폴더 내부에 기록
+  ↓
+  시간 배율 조절은 1
+
 ```
 
+- run-generator.bat
+  - AWS fargate에서 진행
+```
+  # 전체 옵션
+  scripts\run-generator.bat [DOMAIN] [DURATION] [BASE_RPS] [CORRUPTION_RATE] [TASK_COUNT] [REGION] [TIME_SCALE]
+```
