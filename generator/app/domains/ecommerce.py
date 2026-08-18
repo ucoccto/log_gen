@@ -4,6 +4,7 @@
 '''
 import random # 값을 선택, 생성시 확률적인 정보(선택) 제공하는 도구
 from faker import Faker
+import uuid
 
 # 해당 도메인에서 발생 가능한 이벤트 종류 정의
 EVENTS  = ["product_view", "search", "add_to_cart", "checkout", "order_created", "payment_completed"]
@@ -13,6 +14,18 @@ WEIGHTS = [34, 20, 17, 9, 11, 9]
 def generate(fake:Faker, *, timezone_name:str, envrionment:str, run_id:str) -> dict:
   # 1. 이벤트 타입 선택
   event_type = random.choices(EVENTS, weights=WEIGHTS, k=1)[0]
+  # 2. 사용자 ID (임의 구성 => 실제라면 가입한  ID 혹은 내부 관리용 ID를 활용)
+  user_id    = f"usr_{random.randint(100000, 999999)}" # 중복성 고려하여 랜덤 활용(uuid x)
+  # 3. 요청 흐름을 구분하는 세션 ID (고유함)
+  session_id = uuid.uuid4().hex[:20] # 중복되지 않는 해시값 20자리수 제공
+
   return {
-    "event_type"  : event_type
+    # 공용 데이터
+    "event_type"  : event_type,
+
+    # 도메인별 커스텀 데이터 
+    "data": {
+      "user_id": user_id,
+      "session_id": session_id
+    }
   }
