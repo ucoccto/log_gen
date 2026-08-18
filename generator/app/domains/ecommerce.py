@@ -13,6 +13,8 @@ EVENTS  = ["product_view", "search", "add_to_cart", "checkout", "order_created",
 WEIGHTS = [34, 20, 17, 9, 11, 9]
 # 카테고리 정의
 CATEGORIES = ['food', 'fashion', 'beauty', 'electronics', 'home', 'sports']
+# 결제 시제
+PAYMENTS   = ['card', 'bank_transfer', 'easy_pay', 'points']
 
 def generate(fake:Faker, *, timezone_name:str, envrionment:str, run_id:str) -> dict:
   # 1. 이벤트 타입 선택
@@ -42,6 +44,36 @@ def generate(fake:Faker, *, timezone_name:str, envrionment:str, run_id:str) -> d
   # 응답코드 ( 400 이하이면 모두 성공, 그 이상이면 오류)
   status = http_status(method, success=0.9722, client_error=0.222)
 
+  # 도메인별 데이터
+  data = {
+    "user_id": user_id,
+    "session_id": session_id,
+    "product_id": product_id,
+    "category"  : random.choices(CATEGORIES),
+    "quantity"  : quantity,
+    "unit_price": unit_price,
+    "currency"  : "KRW", # 가격 단가,
+    "campaign"  : random.choices([None, None, None, "summer_sale", "coupon", "winter_sale"])
+  }
+
+  # 이벤트 타입별 추가 데이터 구성
+  if event_type == 'search':
+    data.update({
+      "keyword"      : fake.word(),           # 검색어 페이크
+      "result_count" : random.randint(0,240)  # 검색 결과셋 랜덤
+    })
+  # 주문 이벤트(3개)에서 주문 id, 금액, 결제 시제
+  if event_type in { "checkout", "order_created", "payment_completed" }:
+    data.update({
+      "order_id"       : f"ord_{uuid.uuid4().hex[:16]}", #결제 관리 번호 고유하게 관리
+      "total_amount"   : unit_price * quantity, # 구매 단가
+      "payment_method" : random.choices( PAYMENTS )
+    })
+  # 결제 완료 이벤트 -> 성공/실패 결과 추가
+  if event_type == "payment_completed":
+    # 응답코드 기준으로 판정 코드 < 400 => 정상
+    data["payment_result"] = "approved" if status < 400 else random.choices(["timeout","cancelled"])
+
 
   return {
     # 공용 데이터
@@ -58,14 +90,5 @@ def generate(fake:Faker, *, timezone_name:str, envrionment:str, run_id:str) -> d
       #"response_bytes": 4084
     },
     # 도메인별 커스텀 데이터 
-    "data": {
-      "user_id": user_id,
-      "session_id": session_id,
-      "product_id": product_id,
-      "category"  : random.choices(CATEGORIES),
-      "quantity"  : quantity,
-      "unit_price": unit_price,
-      "currency"  : "KRW", # 가격 단가,
-      "campaign"  : random.choices([None, None, None, "summer_sale", "coupon", "winter_sale"])
-    }
+    "data": data
   }
