@@ -90,3 +90,18 @@
   - 스마트팩토리 : 24시간 비교적 일정, 교대/주말 변화 
   - 게임 : 저녁/야간 피크, 주말 증가세
   - 증가세를 적용하여 피크시 트레피을 10배, 5배 이렇게 가중 할수 있음
+
+# 오염 데이터
+- 비율 지정 => 0.03 => 각 이벤트에서 3% 비율로 오염 데이터 생산 => ETL에서 clean 작업 처리
+- 오염 유형
+```
+missing_field
+null_required
+wrong_type
+invalid_timestamp
+numeric_outlier
+invalid_enum
+negative_latency
+duplicate
+malformed_json
+```
