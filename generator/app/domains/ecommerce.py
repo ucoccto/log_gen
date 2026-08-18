@@ -5,6 +5,7 @@
 import random # 값을 선택, 생성시 확률적인 정보(선택) 제공하는 도구
 from faker import Faker
 import uuid
+from common import http_status
 
 # 해당 도메인에서 발생 가능한 이벤트 종류 정의
 EVENTS  = ["product_view", "search", "add_to_cart", "checkout", "order_created", "payment_completed"]
@@ -39,7 +40,7 @@ def generate(fake:Faker, *, timezone_name:str, envrionment:str, run_id:str) -> d
   # 메소드, 경로, 지연시간(중간값)
   method, path, median_latency = routes[ event_type ]
   # 응답코드 ( 400 이하이면 모두 성공, 그 이상이면 오류)
-  status = 
+  status = http_status(method, success=0.9722, client_error=0.222)
 
 
   return {
@@ -52,7 +53,7 @@ def generate(fake:Faker, *, timezone_name:str, envrionment:str, run_id:str) -> d
       #"request_bytes": 237
     },
     "response": {
-      #"status_code": 200,
+      "status_code": status,
       "latency_ms": median_latency,
       #"response_bytes": 4084
     },
