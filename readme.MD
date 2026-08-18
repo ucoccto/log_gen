@@ -104,4 +104,33 @@ invalid_enum
 negative_latency
 duplicate
 malformed_json
+...
+```
+
+
+# 로그 발생기의 데이터 파이프라인상의 포지션
+```
+```
+              Data Source Simulator
+              Fargate + Python/Faker
+                      │ <- (다양한 출력 방향으로 전개)
+    ┌─────────────────┼─────────────────┐
+    │                 │                 │
+    ▼                 ▼                 ▼
+    S3              Kinesis            Kafka
+File/Batch         AWS Stream       Event Stream
+    │                 │                 │
+    └─────────────┬───┴─────────────────┘
+                  ▼
+            Bronze Layer
+                  │
+          ETL / ELT Processing
+      Pandas / Polars / Spark
+                  │
+                Silver
+                  │
+                Gold
+                  │
+    Athena / OpenSearch / BI
+```
 ```
