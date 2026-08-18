@@ -27,10 +27,32 @@ def generate(fake:Faker, *, timezone_name:str, envrionment:str, run_id:str) -> d
   # 6. 개당 단가 -> 임의 구성
   unit_price = random.randrange(5000, 300000, 100)
 
+  # 이벤트별 요청에 대한 method, URL(API 경로), 지연 시간(범위내에서 램던 가능)
+  routes = {
+    "product_view"      : ("GET", f"/api/products/{product_id}", 70), # ms
+    "search"            : ("GET", f"/api/search", 95),
+    "add_to_cart"       : ("POST", f"/api/cart/items", 110),
+    "checkout"          : ("POST", f"/api/checkout", 240),
+    "order_created"     : ("POST", f"/api/orders", 310),
+    "payment_completed" : ("POST", f"/api/payments", 420)
+  }
+  # 메소드, 경로, 지연시간(중간값)
+  method, path, median_latency = routes[ event_type ]
+
   return {
     # 공용 데이터
     "event_type"  : event_type,
 
+    "request": {
+      "method": method,
+      "path": path,
+      #"request_bytes": 237
+    },
+    "response": {
+      #"status_code": 200,
+      "latency_ms": median_latency,
+      #"response_bytes": 4084
+    },
     # 도메인별 커스텀 데이터 
     "data": {
       "user_id": user_id,
