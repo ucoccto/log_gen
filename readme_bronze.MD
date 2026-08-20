@@ -114,5 +114,14 @@ Fargate → Kinesis → Firehose → S3 확인 (jsonl, gzip)
 - main.py
        - 생성자 매개변수 조정
 
-# bat/shell 검토
 
+
+# bat/shell 검토
+- 코드 수정 => 이미지 수정 => ecr 업데이트 => setup.bat/sh
+```
+# setup.bat
+docker build --no-cache --platform linux/amd64 -t "%REPO%:latest" "%GENERATOR%"
+
+# setup.sh
+docker build --no-cache --platform linux/amd64 -t "$REPO:latest" "$GENERATOR"
+```

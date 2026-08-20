@@ -141,7 +141,7 @@ def run() -> int:
                 previous_event  =previous_event,
             )
 
-            # 최종 이벤트를 JSONL 형식으로 출력
+            # 최종 이벤트를 JSONL 형식으로 출력, kinesis로 전송
             output.emit(event_to_emit, malformed_json=malformed)
 
             # Store the clean event as the source for a future duplicate.
