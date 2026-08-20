@@ -125,3 +125,15 @@ docker build --no-cache --platform linux/amd64 -t "%REPO%:latest" "%GENERATOR%"
 # setup.sh
 docker build --no-cache --platform linux/amd64 -t "$REPO:latest" "$GENERATOR"
 ```
+
+# 브론즈 데이터 생성
+- 명령 옵션
+```
+ecommerce       도메인
+5               5초 실행
+5               기본 5 RPS
+0.05            오염 데이터 5%
+1               Fargate Task 1개
+ap-northeast-2  서울 리전
+1               Time Scale 1배
+```
