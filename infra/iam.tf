@@ -20,7 +20,7 @@ resource "aws_iam_role" "ecs_execution" {
 
 # 3. Role, 정책 연결 마무리, 실제 실행시 필요한 권한 부여!!
 resource "aws_iam_role_policy_attachment" "ecs_execution" {
-  role       = aws_iam_role.ecs_execution.name
+  role = aws_iam_role.ecs_execution.name
   # aws 관리형 정책을 사전에 AmazonECSTaskExecutionRolePolicy 구성(이 정책에 1번라인에 기술한 내용 반영)
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
@@ -34,16 +34,16 @@ data "aws_iam_policy_document" "firehose_assume" {
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
-    
+
     principals {
       type        = "Service"
       identifiers = ["firehose.amazonaws.com"]
     }
-  }  
+  }
 }
 resource "aws_iam_role" "firehose" {
   # role의 이름 -> 고유
-  name               = "${var.project_name}-firehose-role"
+  name = "${var.project_name}-firehose-role"
   # role에 적용되는 정책 -> 어떤 권한을 가지는가?
   assume_role_policy = data.aws_iam_policy_document.firehose_assume.json
 }
@@ -53,28 +53,28 @@ data "aws_iam_policy_document" "firehose_s3" {
   # kinesis 읽기 권한 관련  
   statement {
     effect = "Allow"
-    actions = [ 
+    actions = [
       "kinesis:DescribeStream",
       "kinesis:GetShardIterator",
       "kinesis:GetRecords",
       "kinesis:ListShards"
     ]
-    resources = [ 
+    resources = [
       aws_kinesis_stream.logs.arn
-    ] 
+    ]
   }
   # s3 저장 권한 관련
   statement {
     effect = "Allow"
-    actions = [ 
+    actions = [
       "s3:AbortMultipartUpload",
       "s3:GetBucketLocation",
       "s3:ListBucket",
       "s3:PutObject"
     ]
-    resources = [ 
-      aws_s3_bucket.data.arn,           # 해당 버킷
-      "${aws_s3_bucket.data.arn}/*"     # 해당 버킷 이하 모든 경로
+    resources = [
+      aws_s3_bucket.data.arn,       # 해당 버킷
+      "${aws_s3_bucket.data.arn}/*" # 해당 버킷 이하 모든 경로
     ]
   }
 }
@@ -82,8 +82,8 @@ data "aws_iam_policy_document" "firehose_s3" {
 
 # firehose_s3를 통해서 조회한 권한을 aws_iam_role.firehose 에 부여
 resource "aws_iam_role_policy" "firehose" {
-  name = "${var.project_name}-firehose-s3-policy"
-  role = aws_iam_role.firehose.id
+  name   = "${var.project_name}-firehose-s3-policy"
+  role   = aws_iam_role.firehose.id
   policy = data.aws_iam_policy_document.firehose_s3.json
 }
 
@@ -96,7 +96,7 @@ resource "aws_iam_role_policy" "firehose" {
 # ecs task -> data -> kinesis 권한 부여하기위한 role 구성
 # 기본적으로 ecs_tasks_assume 부여
 resource "aws_iam_role" "ecs_task_kinesis" {
-  name = "${var.project_name}-ecs-task"
+  name               = "${var.project_name}-ecs-task"
   assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume.json
 }
 
@@ -105,12 +105,12 @@ data "aws_iam_policy_document" "ecs_task_kinesis" {
   statement {
     effect = "Allow"
 
-    actions = [ 
+    actions = [
       "kinesis:PutRecords",
       "kinesis:PutRecord"
     ]
 
-    resources = [ 
+    resources = [
       aws_kinesis_stream.logs.arn
     ]
   }
@@ -118,7 +118,7 @@ data "aws_iam_policy_document" "ecs_task_kinesis" {
 
 # role에 연결하여 정책 구성
 resource "aws_iam_role_policy" "ecs_task_kinesis" {
-  name = "${var.project_name}-kinesis-write"
-  role = aws_iam_role.ecs_task_kinesis.id
+  name   = "${var.project_name}-kinesis-write"
+  role   = aws_iam_role.ecs_task_kinesis.id
   policy = data.aws_iam_policy_document.ecs_task_kinesis.json
 }
