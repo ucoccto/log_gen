@@ -103,7 +103,10 @@ Fargate → Kinesis → Firehose → S3 확인 (jsonl, gzip)
        Faker
        boto3  # AWS SDK 패키지
        ```
-- 
+- config.py
+       - ecs 세팅한 환경변수 전달
+- output.py
+       - 출력 방향에 kinesis 추가
 
 
 # bat/shell 검토
