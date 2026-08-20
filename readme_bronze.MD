@@ -88,13 +88,13 @@ Fargate → Kinesis → Firehose → S3 확인 (jsonl, gzip)
 │  │  outputs.tf
 │  │  provider.tf       # 1. 수정
 │  │  sg.tf
-│  │  variables.tf
-│  │  version.tf         # 유지
-│  │  vpc.tf             # 유지
+│  │  variables.tf      # 2. 수정 
+│  │  version.tf        # 유지
+│  │  vpc.tf            # 유지
 │  │  
-│  ├─ kinesis.tf         # 신규
-│  ├─ firehose.tf        # 신규
-│  ├─ s3.tf              # 신규
+│  ├─ kinesis.tf        # 신규
+│  ├─ firehose.tf       # 신규
+│  ├─ s3.tf             # 신규
 ```
 
 # 파이썬 검토
