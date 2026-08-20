@@ -94,7 +94,7 @@ Fargate → Kinesis → Firehose → S3 확인 (jsonl, gzip)
 │  │  
 │  ├─ kinesis.tf        # 4. 신규
 │  ├─ firehose.tf       # 신규
-│  ├─ s3.tf             # 신규
+│  ├─ s3.tf             # 5. 신규
 ```
 
 # 파이썬 검토
