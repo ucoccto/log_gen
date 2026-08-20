@@ -84,10 +84,10 @@ Fargate → Kinesis → Firehose → S3 확인 (jsonl, gzip)
 │  │  ecs.tf            # 9. 수정
 │  │  iam.tf            # 6/8. 수정 (6.firehose 관련, 8.ecs-task에서 kinesis put 처리) 
 │  │  locals.tf         # 3. 수정
-│  │  logs.tf
-│  │  outputs.tf
+│  │  logs.tf           # 유지
+│  │  outputs.tf        # 10. 수정
 │  │  provider.tf       # 1. 수정
-│  │  sg.tf
+│  │  sg.tf             # 유지
 │  │  variables.tf      # 2. 수정 
 │  │  version.tf        # 유지
 │  │  vpc.tf            # 유지
