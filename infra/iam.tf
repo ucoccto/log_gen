@@ -21,5 +21,29 @@ resource "aws_iam_role" "ecs_execution" {
 # 3. Role, 정책 연결 마무리, 실제 실행시 필요한 권한 부여!!
 resource "aws_iam_role_policy_attachment" "ecs_execution" {
   role       = aws_iam_role.ecs_execution.name
+  # aws 관리형 정책을 사전에 AmazonECSTaskExecutionRolePolicy 구성(이 정책에 1번라인에 기술한 내용 반영)
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+# [브론즈 추가]
+# Firehose용 IAM Role/Policy 추가
+# aws_iam_policy_document -> aws_iam_role -> aws_iam_role_policy_attachment(필요시 추가)
+
+# firehose에서 iam role을 사용하도록 신뢰 정책 조회
+data "aws_iam_policy_document" "firehose_assume" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    
+    principals {
+      type        = "Service"
+      identifiers = ["firehose.amazonaws.com"]
+    }
+  }  
+}
+resource "aws_iam_role" "firehose" {
+  # role의 이름 -> 고유
+  name               = "${var.project_name}-firehose-role"
+  # role에 적용되는 정책 -> 어떤 권한을 가지는가?
+  assume_role_policy = data.aws_iam_policy_document.firehose_assume.json
 }
