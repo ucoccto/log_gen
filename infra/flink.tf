@@ -39,27 +39,30 @@ resource "aws_kinesisanalyticsv2_application" "silver" {
   start_application      = var.flink_start_application
 
   application_configuration {
+    # 스냅샷 사용 x
     application_snapshot_configuration {
       snapshots_enabled = false
     }
 
     application_code_configuration {
+      # 앱의 실제 위치
       code_content {
         s3_content_location {
           bucket_arn = aws_s3_bucket.data.arn
           file_key   = aws_s3_object.flink_app.key
         }
       }
-
+      # 앱의 타임 zip
       code_content_type = "ZIPFILE"
     }
 
     environment_properties {
+      # raw(bronze) 레베의 kinesis 리소스
       property_group {
-        property_group_id = "InputStream"
+        property_group_id = "InputStream0"
 
         property_map = {
-          "stream.arn"                 = aws_kinesis_stream.bronze.arn
+          "stream.arn"                 = aws_kinesis_stream.logs.arn
           "aws.region"                 = var.aws_region
           "flink.source.init.position" = var.flink_source_init_position
         }
