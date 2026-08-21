@@ -82,3 +82,21 @@ Kinesis Raw (2가지 방향성으로 전송)
 | **신규**     | `flink.tf`      | Managed Flink + `flink/`에 코드 업로드                 |
 | **신규**     | `flink-logs.tf` | Flink CloudWatch 로그                              |
 | **수정**     | `outputs.tf`    | Silver/Flink 관련 Output 추가                        |
+
+
+# flink 앱 구성
+- 구성
+```
+flink/
+├── app/
+│   ├── main.py
+│   └── transform.py
+│
+├── assembly/
+│   └── assembly.xml
+│
+├── application_properties.json
+├── pom.xml
+├── README.md
+└── .gitignore
+```
