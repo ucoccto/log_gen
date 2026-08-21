@@ -49,6 +49,26 @@ S3 Bucket
 
 ```
 
+# 구조 
+- 브론즈 유지 및 일부 수정
+- 실버 레이어 추가 kinesis(브론즈) 공급자, flink는 소비자 관점
+```
+로그 생성기
+    ↓
+Kinesis Raw (2가지 방향성으로 전송)
+    ├────────────→ Firehose → S3 Bronze
+    │
+    └→ Flink
+         ↓
+     검증 / 정제 / 변환
+         ↓
+   Kinesis Silver
+         ↓
+      Firehose
+         ↓
+      S3 Silver
+```
+
 # 인프라 수정
 
 | 구분         | 파일              | 변경 내용                                            |
