@@ -1,8 +1,15 @@
+# Managed Service for apache flink
+
 locals {
+  # flink 앱 경로. flink-silver.zip 파일은 스크립트에서 정의, flink 최종 산출물의 경로
+  # ${path.module} => ~/infra (현재 디렉토리 위치)
   flink_artifact_path = "${path.module}/../flink/target/flink-silver.zip"
+  
+  # zip 내용에 MD5 해시를 계산하여 코드 변경 여부 식별 용도
   flink_artifact_hash = filemd5(local.flink_artifact_path)
 }
 
+# flink_app이란 flink-silver.zip이고, aws s3에 위치해야 함
 resource "aws_s3_object" "flink_app" {
   bucket = aws_s3_bucket.data.id
   key    = "flink/applications/flink-silver-${local.flink_artifact_hash}.zip"
@@ -15,6 +22,7 @@ resource "aws_s3_object" "flink_app" {
   ]
 }
 
+# flink 자체 내용
 resource "aws_kinesisanalyticsv2_application" "silver" {
   name                   = local.flink_application_name
   description            = "Raw Kinesis events to Silver Kinesis using PyFlink"
