@@ -128,3 +128,18 @@ mvn -version
 ./scripts/build-flink.bat
 sh ./scripts/build-flink.sh
 ```
+
+# 세팅 
+```
+# 인프라 구성
+terraform -chdir=infra fmt
+terraform -chdir=infra validate
+terraform -chdir=infra plan
+
+./scripts/setup.bat
+
+# Flink 서비스 진입 -> 어플리케이션의 상태 체크 -> 실행 상태가 확인되면 (그린라이트)
+
+# 로그 발송 -> 1분 전후로 s3/버킷/silver 생성 여부 확인 -> 하위에 로그가 존재함 => 완료!!
+
+```
