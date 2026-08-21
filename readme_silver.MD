@@ -89,14 +89,34 @@ Kinesis Raw (2가지 방향성으로 전송)
 ```
 flink/
 ├── app/
-│   ├── main.py
-│   └── transform.py
-│
+│   ├── main.py         : flink 앱 엔트리포인트(실행파트), 브론즈 kinesis 읽기, 
+│   │                     transform 모둘 불러서 clean 작업진행, 실버 kinesis 가동된(전처리된) 데이터 전송
+│   └── transform.py    : 정제, 전처리 등 데이터 처리 작업 진
+├── target/             : 빌드후 생성 : maven 빌드 결과물로 생성
+│   └── *.zip           : 빌드후 생성 : 빌드 결과로 생성된  flink 앱
 ├── assembly/
-│   └── assembly.xml
+│   └── assembly.xml    : flink 앱(zip 파일) 성분 구성에 대한 정의 (*.py, pyflink-dependencies.jar)
 │
-├── application_properties.json
-├── pom.xml
+├── application_properties.json : 로컬에서 실행시 input/output kinesis 설정
+├── pom.xml             : 의존성 파일들 다운로드, jar 생성, zip 패키징 실행
 ├── README.md
 └── .gitignore
+```
+
+- 빌드전 설치 (java, maven)
+```
+# 윈도우
+winget search Microsoft.OpenJDK 
+winget install Microsoft.OpenJDK.11
+java -version
+choco install maven or scoop install main/maven or 직접설치
+https://maven.apache.org/download.cgi?utm_source=chatgpt.com 접속 > apache-maven-3.9.16-bin.zip 다운
+bin 폴더를 path 설정
+
+# 맥
+brew install openjdk@11 maven
+export JAVA_HOME=$(/usr/libexec/java_home -v 11)
+export PATH="$JAVA_HOME/bin:$PATH"
+java -version
+mvn -version
 ```
