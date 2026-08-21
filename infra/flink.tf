@@ -27,10 +27,15 @@ resource "aws_s3_object" "flink_app" {
 
 # flink 자체 내용
 resource "aws_kinesisanalyticsv2_application" "silver" {
+  # flink 리소스 이름
   name                   = local.flink_application_name
-  description            = "Raw Kinesis events to Silver Kinesis using PyFlink"
+  # 설명
+  description            = "Raw(Bronze) Kinesis events to Silver Kinesis using PyFlink"
+  # 런타임 환경 -> 1.20
   runtime_environment    = var.flink_runtime_environment
+  # role
   service_execution_role = aws_iam_role.flink.arn
+  # 앱 : true면 즉시 실행, false 생성만 하고 실해은 직접 세팅
   start_application      = var.flink_start_application
 
   application_configuration {
@@ -80,30 +85,34 @@ resource "aws_kinesisanalyticsv2_application" "silver" {
       }
     }
 
+    # flink 엔진 자체에 대한 설정
     flink_application_configuration {
+      # 장애 복구시  checkpoint 설정
       checkpoint_configuration {
-        configuration_type = "DEFAULT"
+        configuration_type = "DEFAULT" # AWS 기본값 따른다
       }
-
+      # flink 로그, 매트릭 수집 수준 설정
       monitoring_configuration {
-        configuration_type = "CUSTOM"
-        log_level          = "INFO"
-        metrics_level      = "APPLICATION"
+        configuration_type = "CUSTOM" # 직접 구성
+        log_level          = "INFO"   # 정보 수준
+        metrics_level      = "APPLICATION" # 애플리케이션 단위(레벨) 정보
       }
-
+      # 애플리케이션 구동시 병렬 처리, KPU 설정
       parallelism_configuration {
-        configuration_type   = "CUSTOM"
-        auto_scaling_enabled = true
-        parallelism          = var.flink_parallelism
-        parallelism_per_kpu  = var.flink_parallelism_per_kpu
+        configuration_type   = "CUSTOM" # 직접 설정
+        auto_scaling_enabled = true     # 부하에 따라 자동 조절
+        parallelism          = var.flink_parallelism # 기본값
+        parallelism_per_kpu  = var.flink_parallelism_per_kpu # 기본값
       }
     }
   }
 
+  # flink 실행 => 로그 (정상, 에러) => cloudwatch 저장
   cloudwatch_logging_options {
     log_stream_arn = aws_cloudwatch_log_stream.flink.arn
   }
 
+  # 사전에 role 정책 완료, 앱 설정 완료
   depends_on = [
     aws_iam_role_policy.flink,
     aws_s3_object.flink_app
