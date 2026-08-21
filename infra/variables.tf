@@ -113,3 +113,18 @@ variable "flink_runtime_environment" {
   type        = string
   default     = "FLINK-1_20"
 }
+variable "flink_parallelism" {
+  description = "Initial Flink application parallelism"
+  type        = number
+  default     = 1
+}
+variable "flink_parallelism_per_kpu" {
+  description = "Flink parallel tasks per KPU"
+  type        = number
+  default     = 1
+}
+variable "flink_start_application" {
+  description = "Whether Terraform should start the Managed Flink application"
+  type        = bool
+  default     = false
+}
