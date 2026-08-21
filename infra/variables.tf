@@ -91,3 +91,25 @@ variable "firehose_buffer_interval" {
   type        = number
   default     = 60
 }
+
+
+# [실버 추가]
+# 실버 레이어에서 출력용 사드수
+variable "silver_kinesis_shard_count" {
+  description = "KDS's shard count"
+  type        = number
+  default     = 1
+}
+# kinesis 에서 미전송된 데이터 보관기간
+variable "silver_kinesis_retention_hour" {
+  description = "KDS's retention period in hours"
+  type        = number
+  default     = 24
+}
+
+# PyFlink 버전(런타임 환경의 버전) 1.20 사용
+variable "flink_runtime_environment" {
+  description = "Managed Service for Apache Flink의 런타임 환경버전"
+  type        = string
+  default     = "FLINK-1_20"
+}
