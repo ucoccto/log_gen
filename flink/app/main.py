@@ -83,6 +83,8 @@ def main() -> None:
     input_props = _property_map(properties, "InputStream0")
     # 4. 런타임 속성에서 OutputStream0 이름의 키네시스 정보 획득. 실버 출력
     output_props = _property_map(properties, "OutputStream0")
+    # [REJECT] 비정상 데이터 출력용 kinesis 설정
+    reject_props = _property_map(properties, "RejectStream0")
 
     # 5. 키네시스 arn, 리전, 입력시 어디서부터 읽을 것인지 등 정보 로드
     input_stream_arn = input_props["stream.arn"]
@@ -90,6 +92,9 @@ def main() -> None:
     input_init_position = input_props.get("flink.source.init.position", "LATEST")
     output_stream_arn = output_props["stream.arn"]
     output_region = output_props["aws.region"]
+    # [REJECT]
+    reject_stream_arn = reject_props["stream.arn"]
+    reject_region = reject_props["aws.region"]
 
     # 6. 파이썬 함수 clean_event를 Flink SQL 내부에서 clean_event(..)로 사용하도록 등록
     table_env.create_temporary_system_function("clean_event", clean_event)
