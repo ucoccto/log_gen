@@ -9,6 +9,7 @@ from pyflink.table import DataTypes, EnvironmentSettings, TableEnvironment
 from pyflink.table.udf import udf
 from transform import clean_event_payload
 
+# 테라폼이 인프라 구성시 자동으로 설정
 MANAGED_PROPERTIES_PATH = "/etc/flink/application_properties.json"
 IS_LOCAL = bool(os.environ.get("IS_LOCAL"))
 
@@ -18,18 +19,21 @@ def clean_event(payload: str):
     # 정제, 전처리 전담 함수를 래핑
     return clean_event_payload(payload)
 
+# flink 경로 계산을 위한 함수
 def _project_dir() -> str:
     current_dir = os.path.dirname(os.path.realpath(__file__))
     if os.path.basename(current_dir) == "app":
         return os.path.dirname(current_dir)
     return current_dir
 
+# xxx.json 설정 파일에서 정보 획득용
 def _property_map(properties: list[dict], group_id: str) -> dict:
     for prop in properties:
         if prop.get("PropertyGroupId") == group_id:
             return prop.get("PropertyMap", {})
     raise RuntimeError(f"Runtime property group not found: {group_id}")
 
+# flink 구동 환경에 맞춰서 로컬 or 클라우드에서 정보 로드(json 파일)
 def _load_application_properties() -> list[dict]:
     if IS_LOCAL:
         path = os.path.join(_project_dir(), "application_properties.json")
@@ -41,9 +45,14 @@ def _load_application_properties() -> list[dict]:
     with open(path, "r", encoding="utf-8") as file:
         return json.load(file)
 
+# Flink가 SQL/테이블 API들을 사용할 있는 스트리밍 모드의 환경구성
 def _create_table_environment() -> TableEnvironment:
+    # 스트리밍 모드 설정
     settings = EnvironmentSettings.in_streaming_mode()
+    # 스트리밍 모드로 테이블환경 구성
     table_env = TableEnvironment.create(settings)
+    # 로컬에서 구동시 jar 파일 등록
+    # 배치 파일로 빌드시 자동으로 다운로드해서 zip으로 같이 넣어주는 파일임
     if IS_LOCAL:
         jar_path = os.path.join(_project_dir(), "target", "pyflink-dependencies.jar")
         if not os.path.isfile(jar_path):
@@ -77,9 +86,12 @@ def main() -> None:
     # 6. 파이썬 함수 clean_event를 Flink SQL 내부에서 clean_event(..)로 사용하도록 등록
     table_env.create_temporary_system_function("clean_event", clean_event)
 
+    # 7. Flink SQL 이용하여 데이터 실시간 처리, 입력데이터도 저장, 출력데이터도 저장=>테이블필요
+    #    도메인별로 (json)구조가 상이할수 있으므로 => 통으로 문자열 받는 구성
+    #    'format' = 'raw' : 저장되는 데이터의 스키마 해석없이 통으로 저장
     table_env.execute_sql(
         f"""
-        CREATE TABLE raw_stream (
+        CREATE TABLE bronze_stream (
             payload STRING
         )
         WITH (
@@ -91,6 +103,9 @@ def main() -> None:
         )
         """
     )
+    # 8. 정제된 결과도 도메인별로 상이 => json 형태 문자열 그대로 저장
+    #    'sink.batch.max-size' = '100', : 최대 100개 레코드를 묶어서 처리 -> 조절가능(firehose)
+    #    sink : 정제된 데이터를 kinesis 스트림으로 내보내는 단계
     table_env.execute_sql(
         f"""
         CREATE TABLE silver_stream (
@@ -105,17 +120,23 @@ def main() -> None:
         )
         """
     )
+    # 9. bronze_stream -> 쿼리 -> 정제된 데이터 획득(cleaned_payload) 
+    #    -> 체킹(실제 데이터가 있을때만) -> silver_stream 저장
+    #    잘못된 데이터는 버림 => 왜 잘못된는가 분석 x (데이터가 오직 브로즈에만 남아 있음)
+    #    향후 잘못 구성된 데이터만 모아서 추후 체크(배치 프로세싱 분석)
+    #    브론즈 => 배치 프로세싱으로 추출하여도됨
     result = table_env.execute_sql(
         """
         INSERT INTO silver_stream
         SELECT cleaned_payload
         FROM (
             SELECT clean_event(payload) AS cleaned_payload
-            FROM raw_stream
+            FROM bronze_stream
         )
         WHERE cleaned_payload IS NOT NULL
         """
     )
+    # 로컬에서 flink 구동시 파이썬 앱 => 종료 처리때문에 강제 블럭(계속 작동되도록)
     if IS_LOCAL:
         result.wait()
 
