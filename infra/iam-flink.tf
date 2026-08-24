@@ -163,7 +163,6 @@ resource "aws_iam_role" "firehose_rejected" {
   assume_role_policy = data.aws_iam_policy_document.firehose_rejected_assume.json
 }
 data "aws_iam_policy_document" "firehose_rejected" {
-  # silver kinesis 읽기 권한 관련  
   statement {
     effect = "Allow"
     actions = [
@@ -174,10 +173,9 @@ data "aws_iam_policy_document" "firehose_rejected" {
       "kinesis:ListShards"
     ]
     resources = [
-      aws_kinesis_stream.silver.arn
+      aws_kinesis_stream.rejected.arn
     ]
   }
-  # s3 저장 권한 관련
   statement {
     effect = "Allow"
     actions = [
@@ -193,7 +191,7 @@ data "aws_iam_policy_document" "firehose_rejected" {
   }
 }
 resource "aws_iam_role_policy" "firehose_rejected" {
-  name   = "${var.project_name}-firehose-silver-s3-policy"
-  role   = aws_iam_role.firehose_silver.id
-  policy = data.aws_iam_policy_document.firehose_silver.json
+  name   = "${var.project_name}-firehose-rejected-s3-policy"
+  role   = aws_iam_role.firehose_rejected.id
+  policy = data.aws_iam_policy_document.firehose_rejected.json
 }
