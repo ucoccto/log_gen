@@ -29,4 +29,8 @@ locals {
 }
 
 # [실버 + 오염데이터처리 추가] , rejected 프리픽스 추가
-# 리소스명 2개 구성
+# 리소스명 2개 구성 (kinesis, firehose) 생성
+locals {
+  rejected_kinesis_stream_name = "${var.project_name}-rejected-kinesis"
+  rejected_firehose_name       = "${var.project_name}-rejected-firehose"
+}
