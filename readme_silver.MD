@@ -186,6 +186,7 @@ terraform import aws_ecr_repository.generator de-ai-25-loggen-repo
   - 실버 레벨 추가 부분
     - flink 앱 코드 확인
       - 추후 필요시 코드 업그레이드(기능 추가 부여)
+
     - 오염된 데이터 삭제(현재) => 별도 보관(저장) => 추후 해당 원인 분석 할수 있게 보관 (확장)
     - 저장데이터 -> jsonl (gzip) => parquet 저장(glue 사용)
     - flink 역활 lambda 대체 (차이점 이해)
@@ -203,3 +204,26 @@ terraform import aws_ecr_repository.generator de-ai-25-loggen-repo
 - 카프카 (뒤에서 체크)
 - ELK, EFK
 - step function, eventbridge 
+
+# flink 앱 코드 확인
+- 80% 코드 유지
+  - 필요한 기능만 추가하는 구조로 활용
+  - 함수에서 핵심 부분(정제, 전처리)만 커스텀 하면 기능 활용
+  - 리소스가 변경되면 보정(설정값)
+
+# 오염된 데이터 삭제(현재) => 별도 보관(저장)
+- 추후 해당 원인 분석 할수 있게 보관 (확장)
+- 구성
+```
+Bronze Kinesis
+      ↓
+    Flink
+      │
+      ├─ 정상 → Silver Kinesis → Firehose → S3 silver/
+      │
+      └─ 비정상 → Rejected Kinesis
+                       ↓
+                    Firehose
+                       ↓
+                  S3 rejected/
+```
