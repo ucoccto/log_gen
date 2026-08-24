@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# 데이터 전치리/정제 
+
 from __future__ import annotations
 import json
 from datetime import datetime, timezone
