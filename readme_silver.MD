@@ -141,7 +141,31 @@ terraform -chdir=infra plan
 # Flink 서비스 진입 -> 어플리케이션의 상태 체크 -> 실행 상태가 확인되면 (그린라이트)
 
 # 로그 발송 -> 1분 전후로 s3/버킷/silver 생성 여부 확인 -> 하위에 로그가 존재함 => 완료!!
+./scripts/run-generator.bat ecommerce 5 5 0.20 1 ap-northeast-2 1
 
+============================================================
+Fargate synthetic log generator
+============================================================
+Run ID          : loggen-10094606-7593
+Domain          : ecommerce
+Duration        : 5s
+Base RPS        : 5
+Time scale      : 1
+Corruption rate : 0.20
+Tasks           : 1
+Region          : ap-northeast-2
+Cluster         : de-ai-25-loggen-cluster
+
+-----------------------------------------------------------------------------------------------------------                           
+|                                                 RunTask                                                 |
++---------------------------------------------------------------------------------------------------------+
+|  arn:aws:ecs:ap-northeast-2:827913617635:task/de-ai-25-loggen-cluster/f670ea4a0575429b861e182864f335c2  |
++---------------------------------------------------------------------------------------------------------+
+
+
+Task started.
+Follow generated logs:
+  aws logs tail "/ecs/de-ai-25-loggen" --follow --region "ap-northeast-2"
 ```
 
 # 트레블 슈팅
@@ -156,3 +180,26 @@ terraform import aws_ecr_repository.generator de-ai-25-loggen-repo
 
 
 ```
+
+# 확인
+- 실시간 스트리밍 데이터 처리 관점
+  - 실버 레벨 추가 부분
+    - flink 앱 코드 확인
+      - 추후 필요시 코드 업그레이드(기능 추가 부여)
+    - 오염된 데이터 삭제(현재) => 별도 보관(저장) => 추후 해당 원인 분석 할수 있게 보관 (확장)
+    - 저장데이터 -> jsonl (gzip) => parquet 저장(glue 사용)
+    - flink 역활 lambda 대체 (차이점 이해)
+  - 실버 -> 골드 추가
+    - flink or lambda 사용 가능 => 최종 목표 형태로 가공
+    - 중간 과정 동일
+    - 최종 s3 적제(parquet) / opensearch
+  - 대시보드 (프로메테우스, 그라파다 등 연결)
+    - s3=>athena 쿼리질의, opensearch 검색질의 => 대시보드상 실시간 모니터링 데이터 조회에 응답가능
+
+- 로그 생성기 => kinesis => firehose => s3(브론즈) 저장
+  - 배치 프로세싱 (airflow 기반) + 메탈리온 아킥텍처 적용
+    - 특정 주기 단위로 airflow 작동 => 브론즈 -> 실버 -> 골드 -> 최종 산출물(대시보드, 래포트) 구성
+
+- 카프카 (뒤에서 체크)
+- ELK, EFK
+- step function, eventbridge 
