@@ -7,8 +7,11 @@ from datetime import datetime, timezone
 from typing import Any, Optional
 
 SILVER_SCHEMA_VERSION = "1.0"
+# [REJECT] reject 데이터 관리 버전 
+REJECT_SCHEMA_VERSION = "1.0"
 
-def clean_event_payload(payload: Any) -> Optional[str]:
+# 데이터 사전 체크
+def _parse_payload(payload: Any):
     # 1. 데이터에 문제가 있으면 => None 처리
     # 1-1. 입력 데이터 자체가 없으면 None
     if payload is None:
@@ -33,6 +36,9 @@ def clean_event_payload(payload: Any) -> Optional[str]:
     # 3. 파싱 결과 검사, dict 타입이 아니면 None
     if not isinstance(event, dict):
         return None
+
+def clean_event_payload(payload: Any) -> Optional[str]:
+    
     
     # 클린작업
     # 딕셔너리 컴프리핸션
