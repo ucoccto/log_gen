@@ -98,6 +98,8 @@ def main() -> None:
 
     # 6. 파이썬 함수 clean_event를 Flink SQL 내부에서 clean_event(..)로 사용하도록 등록
     table_env.create_temporary_system_function("clean_event", clean_event)
+    # [REJECT] reject_event 함수를 sql에서 사용할수 있게 등록
+    table_env.create_temporary_system_function("reject_event", reject_event)
 
     # 7. Flink SQL 이용하여 데이터 실시간 처리, 입력데이터도 저장, 출력데이터도 저장=>테이블필요
     #    도메인별로 (json)구조가 상이할수 있으므로 => 통으로 문자열 받는 구성
@@ -128,6 +130,21 @@ def main() -> None:
             'connector' = 'kinesis',
             'stream.arn' = '{output_stream_arn}',
             'aws.region' = '{output_region}',
+            'sink.batch.max-size' = '100',
+            'format' = 'raw'
+        )
+        """
+    )
+    # [REJECT] 비정상(오염) 데이터용 kinesis sink, 테이블구성
+    table_env.execute_sql(
+        f"""
+        CREATE TABLE rejected_stream (
+            payload STRING
+        )
+        WITH (
+            'connector' = 'kinesis',
+            'stream.arn' = '{reject_stream_arn}',
+            'aws.region' = '{reject_region}',
             'sink.batch.max-size' = '100',
             'format' = 'raw'
         )
