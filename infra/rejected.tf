@@ -19,15 +19,15 @@ resource "aws_kinesis_stream" "rejected" {
   }
 }
 
-# silver 레이어의 kinesis와 연동되는 firehose
+# rejected kinesis와 연동되는 firehose
 resource "aws_kinesis_firehose_delivery_stream" "rejected" {
-  # 이름
-  name        = local.silver_firehose_name
+  # 이름 교체
+  name        = local.rejected_firehose_name
   destination = "extended_s3"
 
   # 입력소스 (키네시스, 역활 설정)
   kinesis_source_configuration {
-    kinesis_stream_arn = aws_kinesis_stream.silver.arn
+    kinesis_stream_arn = aws_kinesis_stream.rejected.arn
     role_arn           = aws_iam_role.firehose_silver.arn
   }
 
