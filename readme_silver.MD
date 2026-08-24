@@ -212,10 +212,11 @@ terraform import aws_ecr_repository.generator de-ai-25-loggen-repo
   - 리소스가 변경되면 보정(설정값)
 
 # 오염된 데이터 삭제(현재) => 별도 보관(저장)
+## 개요
 - 추후 해당 원인 분석 할수 있게 보관 (확장)
 - 구성
 ```
-Bronze Kinesis
+Bronze Kinesis -> 배치 프로세싱으로 통해 오염 데이터만 추출하여 주기적으로 모니터링 방법
       ↓
     Flink
       │
@@ -225,5 +226,10 @@ Bronze Kinesis
                        ↓
                     Firehose
                        ↓
-                  S3 rejected/
+                  S3 rejected/ => 차후 배치 프로세싱을 통해 => 근본적인 문제 해결
 ```
+- 정상과 비정상은 flink에서 연결
+  - None으로 처리되는 부분을 Rejected Kinesis로 전달하도록 sql 수정
+- Rejected Kinesis -> Firehose -> S3 rejected/ : 인프라 구성
+
+## 인프라 구성
