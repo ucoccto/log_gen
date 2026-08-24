@@ -10,6 +10,7 @@ SILVER_SCHEMA_VERSION = "1.0"
 # [REJECT] reject 데이터 관리 버전 
 REJECT_SCHEMA_VERSION = "1.0"
 
+# [REJECT]
 # 데이터 사전 체크 -> 오류 사유를 추가 반환
 def _parse_payload(payload: Any):
     # 1. 데이터에 문제가 있으면 => None 처리
@@ -70,6 +71,7 @@ def clean_event_payload(payload: Any) -> Optional[str]:
         default=str,                # 객체 직렬화가 않되는 값은 강제로 문자열 처리
     )
 
+# [REJECT]
 # rejecect kinesis로 전송되는 루틴이므로, 정상 데이터는 누락
 def reject_event_payload(payload: Any) -> Optional[str]:
     # 데이터 검수
