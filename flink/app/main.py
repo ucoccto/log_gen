@@ -150,12 +150,18 @@ def main() -> None:
         )
         """
     )
+
+    # [REJECT] 단일 insert 대신 정상/비정상 sink를 처리하는 하나의 job으로 StatementSet 구성
+    statement_set = table_env.create_statement_set()
+
     # 9. bronze_stream -> 쿼리 -> 정제된 데이터 획득(cleaned_payload) 
     #    -> 체킹(실제 데이터가 있을때만) -> silver_stream 저장
     #    잘못된 데이터는 버림 => 왜 잘못된는가 분석 x (데이터가 오직 브로즈에만 남아 있음)
     #    향후 잘못 구성된 데이터만 모아서 추후 체크(배치 프로세싱 분석)
     #    브론즈 => 배치 프로세싱으로 추출하여도됨
-    result = table_env.execute_sql(
+    # [REJECT]
+    #result = table_env.execute_sql(
+    statement_set.add_insert_sql(
         """
         INSERT INTO silver_stream
         SELECT cleaned_payload
@@ -166,6 +172,21 @@ def main() -> None:
         WHERE cleaned_payload IS NOT NULL
         """
     )
+    # [REJECT] : 오염 데이터 저장, 오염데이터 검사 => 해당되는 데이터만 전송
+    statement_set.add_insert_sql(
+        """
+        INSERT INTO rejected_stream
+        SELECT rejected_payload
+        FROM (
+            SELECT reject_event(payload) AS rejected_payload
+            FROM bronze_stream
+        )
+        WHERE rejected_payload IS NOT NULL
+        """
+    )
+    # [REJECT] 두개의 sink를 병렬 처리
+    result = statement_set.execute()
+
     # 로컬에서 flink 구동시 파이썬 앱 => 종료 처리때문에 강제 블럭(계속 작동되도록)
     if IS_LOCAL:
         result.wait()
