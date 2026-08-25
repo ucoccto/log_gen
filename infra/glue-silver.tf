@@ -58,4 +58,14 @@ resource "aws_glue_catalog_table" "silver" {
     # $${year} => ${year} 자체로 전달하기 위해서 앞에 $ 추가한 표현
     "storage.location.template" = "s3://${aws_s3_bucket.data.bucket}/silver/year=$${year}/month=$${month}/day=$${day}/hour=$${hour}"
   }
+
+  # 실제 데이터가 어디에 존재, 어떤 파일 형식, 어떤 스키마를 가지는지 구성
+  storage_descriptor {
+    # 실제 silver 상에 s3 root 경로
+    location = "s3://${aws_s3_bucket.data.bucket}/silver/"
+
+    # s3 파일이 parquet 형식임을 알려주는
+    input_format  = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
+    output_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
+  }
 }
