@@ -98,7 +98,7 @@ def reject_event_payload(payload: Any) -> Optional[str]:
             "processor": "apache-flink",
             "schema_version": REJECT_SCHEMA_VERSION,
             # 오염 데이터의 이유
-            "reason": reject_reason
+            "reason": reject_reason,
             "processed_at": datetime.now(timezone.utc).isoformat(), # 처리시간
         },
         # 오류가 난 상태 그대로 보관

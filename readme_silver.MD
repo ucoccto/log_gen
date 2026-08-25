@@ -243,5 +243,21 @@ Bronze Kinesis -> 배치 프로세싱으로 통해 오염 데이터만 추출하
       scripts\setup-flink.bat
       
       sh ./scripts/setup-flink.sh
+
+      ----
+      scripts\flink-status.bat
+      ----------------------------------------------------------
+      |                   DescribeApplication                  |
+      +-------------------------------+--------------+---------+
+      |             Name              |   Runtime    | Status  |
+      +-------------------------------+--------------+---------+
+      |  de-ai-25-loggen-silver-flink |  FLINK-1_20  |  READY  |
+      +-------------------------------+--------------+---------+
+
+      -----
+      scripts\flink-start.bat
+
+      scripts\flink-status.bat
+
     ```
   - 로그 제너레이터 가동 -> 오염도를 30% 올려서 잘 수집되도록 구성
