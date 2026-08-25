@@ -50,22 +50,28 @@ resource "aws_kinesis_firehose_delivery_stream" "silver" {
     data_fotmat_conversion_configuration {
       # 구성 정보 사용
       enabled = true
-
       # 입력원 flink 통해서 나온 JSON임
       input_foramt_configuration{
-
+        # ser_de (serializer/deserializer)
+        deserializer {
+          open_x_json_ser_de {
+            case_insensitive                         = true
+            convert_dots_in_json_keys_to_underscores = false
+          }
+        }
       }
-
       # JONS->parquet 변환시 참고할 스키마
       schema_configuration{
         
       }
-
       # 출력 SNAPPY 압축을 통한 Parquet임
       output_foramt_configuration{
-        
-      }     
-
+        serializer {
+          parquet_ser_de {
+            compression = "SNAPPY"
+          }
+        }
+      }
     }
 
     # 아래 처럼 구성 => partition pruning => Athena/opensearch/Glue/spark등 열기반으로 데이터 추출 유용
