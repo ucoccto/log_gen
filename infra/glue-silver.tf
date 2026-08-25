@@ -33,8 +33,25 @@ resource "aws_glue_catalog_table" "silver" {
     # 파티션 활성화 (s3://버킷/silver/year=2026/....), 파티션화 되어 저장되어 있음 (partition projection)
     "projection.enabled" = "true"
     # 파티션 정보 -> year, month, day, hour -> 타입, 값 범위 지정
+    # year
     "projection.year.type" = "integer"
     "projection.year.range" = "2026,2040" # 뒤에 2040는 설정값, 2026은 현재로 가정
+    
+    # month
+    # 1 -> 01, 2 -> 02 => digits = 2
+    "projection.month.type" = "integer"
+    "projection.month.range" = "1,12"
+    "projection.month.digits" = "2" # 2자리수로 맞춤
+
+    # day
+    "projection.day.type" = "integer"
+    "projection.day.range" = "1,31"
+    "projection.day.digits" = "2" # 2자리수로 맞춤
+
+    # hour
+    "projection.hour.type" = "integer"
+    "projection.hour.range" = "0,23"
+    "projection.hour.digits" = "2" # 2자리수로 맞춤
 
   }
 }
