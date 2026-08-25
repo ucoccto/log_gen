@@ -60,9 +60,18 @@ resource "aws_kinesis_firehose_delivery_stream" "silver" {
           }
         }
       }
-      # JONS->parquet 변환시 참고할 스키마
+      # JONS->parquet 변환시 참고할 스키마 (glue-silver.tf에 설정)
       schema_configuration{
-        
+        # 데이터베이스 명
+        database_name = 
+        # 테이블 명
+        table_name    = 
+        # role 리소스명
+        role_arn      = 
+        # 리전명
+        region        = var.aws_region
+        # 버전
+        version_id    = "LATEST"
       }
       # 출력 SNAPPY 압축을 통한 Parquet임
       output_foramt_configuration{
