@@ -69,12 +69,11 @@ def _parse_payload(payload: Any):
 #
 # 이런 데이터는 json.loads()에는 성공하기 때문에
 # 별도의 데이터 품질 검사가 필요함
-def _validate_event(event: dict) -> Optional[str]:
 
+def _validate_event(event: dict) -> Optional[str]:
     # -----------------------------------------------------
     # [추가] 필수 필드 검사
     # -----------------------------------------------------
-
     # 모든 도메인에서 공통적으로 존재해야 하는 필드
     required_fields = [
         "event_id",
