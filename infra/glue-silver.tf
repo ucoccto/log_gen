@@ -21,4 +21,20 @@ resource "aws_glue_catalog_table" "silver" {
   name = "silver_logs_tbl"
   # 테이블의 원소속(데이터베이스) 설정
   database_name = aws_glue_catalog_database.silver.name
+  # 데이터는 glue 외부에 존재함 원데이터는 s3에 저장되어 있음 -> 데이터가 glue 외부에 있으므로
+  table_type = "EXTERNAL_TABLE"
+
+  # 파라미터 지정
+  parameters = {
+    # 실 데이터가 glue 외부에 존재함을 표시
+    EXTERNAL = "TRUE"
+    # parquet의 압축 방식
+    "parquet.compression" = "SNAPPY"
+    # 파티션 활성화 (s3://버킷/silver/year=2026/....), 파티션화 되어 저장되어 있음 (partition projection)
+    "projection.enabled" = "true"
+    # 파티션 정보 -> year, month, day, hour -> 타입, 값 범위 지정
+    "projection.year.type" = "integer"
+    "projection.year.range" = "2026,2040" # 뒤에 2040는 설정값, 2026은 현재로 가정
+
+  }
 }
