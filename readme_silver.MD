@@ -306,3 +306,7 @@ Bronze Kinesis -> 배치 프로세싱으로 통해 오염 데이터만 추출하
   - 기존 role에 glue 권한 추가
 - outputs.tf
   - glue 관련 이름, 리소스등 출력
+
+
+### silver.tf (수정)
+
