@@ -163,4 +163,21 @@ resource "aws_glue_catalog_table" "silver" {
     }
 
   }
+
+  Partition_keys {
+    name = "year"
+    type = "string"
+  }
+  Partition_keys {
+    name = "month"
+    type = "string"
+  }
+  Partition_keys {
+    name = "day"
+    type = "string"
+  }
+  Partition_keys {
+    name = "hour"
+    type = "string"
+  }
 }
