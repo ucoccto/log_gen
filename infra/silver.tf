@@ -63,7 +63,7 @@ resource "aws_kinesis_firehose_delivery_stream" "silver" {
       # JONS->parquet 변환시 참고할 스키마 (glue-silver.tf에 설정)
       schema_configuration{
         # 데이터베이스 명
-        database_name = 
+        database_name = aws_glue_catalog_database.silver
         # 테이블 명
         table_name    = 
         # role 리소스명
