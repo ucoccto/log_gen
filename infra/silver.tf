@@ -67,7 +67,7 @@ resource "aws_kinesis_firehose_delivery_stream" "silver" {
         # 테이블 명
         table_name = aws_glue_catalog_table.silver.name
         # role 리소스명
-        role_arn      = aws_iam_role.firehose_silver.arn
+        role_arn = aws_iam_role.firehose_silver.arn
         # 리전명
         region = var.aws_region
         # 버전
