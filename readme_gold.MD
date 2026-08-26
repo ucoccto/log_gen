@@ -278,6 +278,39 @@ where year = '2026'
 limit 10
 ;
 
+# 도메인별 로그 개수 집계 쿼리 작성 (실습)
+# 단, 2026년 8월 25일 14시 기준
+# 1. domain, cnt 로 출력, cnt 기준 내림차순 정렬
+select
+    domain,
+    count(*) as cnt
+from silver_logs_tbl
+where year = '2026'
+	and month = '08'
+	and day = '25'
+	and hour = '14'
+GROUP BY domain
+ORDER BY cnt DESC
+;
+
+
+# 2. 도메인별 이벤트 타입별 발생 건수
+#    domain, event_type, cnt
+#    domain, cnt 기준 내림차순 정렬
+select
+    domain,
+    event_type,
+    count(*) as cnt
+from silver_logs_tbl
+where year = '2026'
+	and month = '08'
+	and day = '25'
+	and hour = '14'
+GROUP BY domain, event_type
+ORDER BY domain, cnt DESC
+;
+
+
 ```
 
 # 람다 코드 작성
