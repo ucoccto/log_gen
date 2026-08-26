@@ -218,20 +218,20 @@ Silver Kinesis
 
 # 인프라및 코드 구성
 ```
-silver-to-gold-lambda/
+/
 ├─ infra/
-│  ├─ gold-lambda.tf
-│  ├─ glue-gold.tf
-│  └─ outputs-gold.tf
+│  ├─ gold-lambda.tf  : lambda 사용에 관련된 모든 내용 총합 세팅(로컬, 리소스, iam-role등 )
+│  ├─ glue-gold.tf    : parquet 저장에 따른 glue 설정
+│  └─ outputs-gold.tf : 출력값(신규  세팅)
 │
-├─ lambda/
-│  └─ gold/
-│     ├─ main.py
-│     └─ gold-lambda.zip
+├─ lambda/                  : 신규 폴더
+│  └─ gold/         
+│     ├─ main.py            : 처리 함수
+│     └─ gold-lambda.zip    : 람다에 배포할 압축 파일
 │
-├─ scripts/
-│  ├─ build-gold-lambda.bat
-│  └─ build-gold-lambda.sh
+├─ scripts/                 
+│  ├─ build-gold-lambda.bat : 빌드
+│  └─ build-gold-lambda.sh  : 빌드
 ```
 
 # lambda
