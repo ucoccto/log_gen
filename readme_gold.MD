@@ -311,6 +311,11 @@ ORDER BY domain, cnt DESC
 ;
 
 
+# 응답 HTTP 상태코드별 건수 집계
+# domain, event_type, status_code, cnt 출력
+# 집계대상은 domain, event_type, status_code
+# 정렬은 event_type ASC, status_code DESC
+
 ```
 
 # 람다 코드 작성
