@@ -348,6 +348,34 @@ ORDER BY cnt DESC
 
 # 서비스별 평균응답 시간
 # 서비스명, 응답시간 평균, 응답시간 최대값, 서비스별개수
+# KPI(핵심성과지표) 항목을 이용하여 조직/개인의 성과(목표)에 대한 달성여부 객곽적인 수치로 평가등에 활용 
+select 
+    service.name as service_name, 
+    avg( response.latency_ms ) as avg_latency_ms,
+    max( response.latency_ms ) as max_latency_ms,
+    count(*) as cnt
+from silver_logs_tbl
+where year = '2026'
+	and month = '08'
+	and day = '25'
+	and hour = '14'
+GROUP BY service.name
+ORDER BY avg_latency_ms DESC
+;
+select 
+    event_type, 
+    avg( response.latency_ms ) as avg_latency_ms,
+    max( response.latency_ms ) as max_latency_ms,
+    count(*) as cnt
+from silver_logs_tbl
+where year = '2026'
+	and month = '08'
+	and day = '25'
+	and hour = '14'
+GROUP BY event_type
+ORDER BY avg_latency_ms DESC
+;
+
 
 ```
 
