@@ -42,8 +42,78 @@ resource "aws_kinesis_stream" "gold" {
 }
 
 # IAM-ROLE
+data "aws_iam_policy_document" "lambda_assume" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
+resource "aws_iam_role" "lambda" {
+  name = "${var.project_name}-gold-lambda-role"
+  # 위에서 만든 신뢰정책 반영하여 role 구성
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume.json
+}
+data "aws_iam_policy_document" "lambda" {
+  # 1. CloudWatch Logs에 기록
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+
+    resources = ["arn:aws:logs:${var.aws_region}:*:*"]
+  }
+  # 2. kinesis 기본 필수 권한
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "kinesis:DescribeStream",
+      "kinesis:DescribeStreamSummary",
+      "kinesis:GetRecords",
+      "kinesis:GetShardIterator",
+      "kinesis:ListShards",
+      "kinesis:ListStreams"
+    ]
+
+    resources = [aws_kinesis_stream.silver.arn]
+  }
+  # 3. kinesis 데이터 기록(집계 결과 전송)
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "kinesis:PutRecord",
+      "kinesis:PutRecords"
+    ]
+
+    resources = [aws_kinesis_stream.gold.arn]
+  }
+}
+# 기존 role에 새로운 정책(여러 권한 조합)을 부여
+resource "aws_iam_role_policy" "lambda" {
+  name   = "${var.project_name}-gold-lambda-policy"
+  role   = aws_iam_role.lambda.id
+  policy = data.aws_iam_policy_document.lambda.json
+}
+
+
 
 # Lambda
+resource "aws_lambda_function" "silver_to_gold" {
+  # 함수이름
+  function_name = local.gold_lambda_name
+  # 역활
+  role = aws_iam_role.lambda.arn
+}
 
 # Silver kinesis -> Lambda 연결
 
