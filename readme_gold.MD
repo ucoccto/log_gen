@@ -260,6 +260,24 @@ where year='2026' and month='08' and day='25' and hour='14'
 ;
 
 
+# 중첩 스트럭처 출력
+# 이름.맴버
+select
+    domain,
+    event_type,
+    service.name,
+    request.method,
+    request.path,
+    response.status_code,
+    response.latency_ms
+from silver_logs_tbl
+where year = '2026'
+	and month = '08'
+	and day = '25'
+	and hour = '14'
+limit 10
+;
+
 ```
 
 # 람다 코드 작성
