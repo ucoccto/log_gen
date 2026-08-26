@@ -1,6 +1,16 @@
-# Silver kinesis -> lambda -> Gole Kinesis -> Firehose -> S3 Gold
+# Silver kinesis -> lambda -> Gold Kinesis -> Firehose -> S3 Gold
 # 필요한 모든 리소스, 권한등 하나의 tf에서 구성
 # locals
+locals {
+    # Gold Kinesis 리소스 이름
+    gold_kinesis_stream_name = "${var.project_name}-gold-kinesis"
+    # Gold Firehose 리소스 이름
+    gold_firehose_name  = "${var.project_name}-gold-firehose"
+    # Silver 데이터 -> Gold용을 구성(집계등) 처리하는 lambda 함수명
+    gold_lambda_name    = "${var.project_name}-silver-to-gold"
+    # 람다 함수 배포용 zip 경로 (테라폼 업로드)
+    gold_lambda_zip     = "${path.module}/../lambda/gold/gold-lambda.zip"
+}
 
 # kinesis
 
