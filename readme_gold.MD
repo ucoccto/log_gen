@@ -385,5 +385,7 @@ ORDER BY avg_latency_ms DESC
 ```
 scripts/build-gold-lambda.bat
 sh ./scripts/build-gold-lambda.sh
+---
+terraform -chdir=infra validate
 ```
 
