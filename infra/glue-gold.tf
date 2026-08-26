@@ -37,14 +37,14 @@ resource "aws_glue_catalog_table" "gold" {
 
   # 실제 데이터가 어디에 존재, 어떤 파일 형식, 어떤 스키마를 가지는지 구성
   storage_descriptor {
-    location        = "s3://${aws_s3_bucket.data.bucket}/gold/"
-    input_format    = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
-    output_format   = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
-    compressed      = true
+    location      = "s3://${aws_s3_bucket.data.bucket}/gold/"
+    input_format  = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
+    output_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
+    compressed    = true
 
     # parquet 파일과 Glue/Athena등 테이블간 사이에서 데이터 구조 해석하는 역활
     ser_de_info {
-      name = "gold-parquet"      
+      name                  = "gold-parquet"
       serialization_library = "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
     }
 
@@ -89,7 +89,7 @@ resource "aws_glue_catalog_table" "gold" {
     columns {
       name = "gold_schema_version"
       type = "struct<name:string,environment:string,instance_id:string>"
-    }    
+    }
   }
 
   partition_keys {
