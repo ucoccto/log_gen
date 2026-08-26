@@ -11,24 +11,30 @@
 
 # 목표 시스템
 ```
-Bronze
+로그 제너레이터 (ECR, ECS, Fargate)
+    ↓
+ Kinesis
+    ↓
+ Firehose
+    ↓
+Bronze  -> raw 데이터 / 원본 (정상, 오염)
  JSON/GZIP
     ↓
  Kinesis
     ↓
-  Flink
+  Flink  -> 정제 (고비용/고가용성) -> SQL로 구성 (insert를 통해 silver)
     ↓
 Silver Kinesis
     │
     ├── 기존 Firehose
     │       ↓
-    │   Parquet
+    │   Parquet(SNAPPY) -> Glue / Model catalog -> Database -> table
     │       ↓
-    │   S3 silver/
+    │   S3 silver/ -> Airflow 배치 프로세싱 -> Athena 이용 SQL -> 데일리 레포트 구성(GOLD)
     │
     └── [추가] Lambda : 의도적으로 Silver Kinesis에서 이미 정제된 데이터를 실시간으로 받아서 실시간 파이프라인 흐름 유지
               ↓
-         비즈니스 가공 (분석용 데이터로 구성, 집계, 통계, ...) -> pandas/polars/spark
+         비즈니스 가공 (분석용 데이터로 구성, 집계, 통계, ...) -> pandas/polars/spark(무겁다) or 단순구성 처리
               ↓
          Gold Kinesis
               ↓
@@ -40,7 +46,7 @@ Silver Kinesis
               ↓
           S3 gold/
               ↓
-         Glue / Athena
+         Glue / Athena -> 작업 그룹 구성 -> 대시보드/서비스에서 SQL로 데이터 획득하여 서비스에활용
 ```
 
 # 인프라및 코드 구성
