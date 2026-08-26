@@ -88,6 +88,30 @@ def _is_success(event: dict[str, Any]) -> bool:
 
 
 def _aggregate(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    '''
+    - silver 이벤트(데이터)를 domain 단위로 Gold 지표에 집계하여 데이터 구성
+    - 비즈니스 목적에 맞게 데이터 가공
+    '''
+    # domain별 기본 틀을 제공하는 형태의 변수 정의
+    '''
+        {
+            "이커머스":{
+                "event_count": 0,
+                "success_count": 0,
+                "error_count": 0,
+                "latencies": [],
+            },
+            "게임":{
+                "event_count": 0,
+                "success_count": 0,
+                "error_count": 0,
+                "latencies": [],
+            },
+            "금융":{},...
+        }
+    
+    '''
+    # groups의 형태를 정의 (도메인별 모두 같은 형태(defaultdict 사용))
     groups: dict[str, dict[str, Any]] = defaultdict(
         lambda: {
             "event_count": 0,
@@ -96,43 +120,62 @@ def _aggregate(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "latencies": [],
         }
     )
-
+    # 데이터 한개씩 추출
     for event in records:
+        # 도메인 획득 -> 공백제거, 소문자 정제 과정 거침
         domain = str(event.get("domain") or "unknown").strip().lower()
-
+        # 도메인을 이용하여 인덱싱
+        '''
+            # 이커머스용
+            {
+                "event_count": 0,
+                "success_count": 0,
+                "error_count": 0,
+                "latencies": [],
+            }
+        '''
         group = groups[domain]
 
+        # 값세팅, event_count 1 증가
         group["event_count"] += 1
-
+        # 성공여부체크 성공 혹은 실패 1 증가
         if _is_success(event):
             group["success_count"] += 1
         else:
             group["error_count"] += 1
-
+        # 응답 획득 => 지연값 위해
         response = event.get("response")
-
+        # dict 가 맞는지 체크
         if isinstance(response, dict):
+            # 지연열 추출
             latency = _to_latency(response.get("latency_ms"))
-
+            # 값이 존재하면 모음(동일 도메인 기준(집계)-전체 데이터수만큼 모아둠->평균.최소.최대)
             if latency is not None:
+                # 리스트에 응답 시간을 계속해서 모아둠
                 group["latencies"].append(latency)
 
+    # 해당 gold 작업을 위한 처리시간 계산
     processed_at = datetime.now(timezone.utc).isoformat()
 
+    # 출력값 세팅한 리스트 준비
     output: list[dict[str, Any]] = []
 
-    for domain, group in sorted(groups.items()):
+    # 도메인별로 세팅한다!! -> 현재는 이커머스만 있음
+    for domain, group in sorted(groups.items()): 
+        # 응답 시간 집계 계산
         latencies = group["latencies"]
-
+        # 평균
         avg_latency = (
             round(sum(latencies) / len(latencies), 2)
             if latencies
             else 0.0
         )
-
+        # 최소 응답
         min_latency = int(min(latencies)) if latencies else 0
+        # 최대 응답
         max_latency = int(max(latencies)) if latencies else 0
 
+        # 결과 판단
         if group["error_count"] == 0:
             result = "success"
         elif group["success_count"] == 0:
