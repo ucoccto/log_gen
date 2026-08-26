@@ -202,21 +202,22 @@ def lambda_handler(
     # 응답 실패용 저장하는 공간
     batch_failures: list[dict[str, str]] = []
 
-    # 이벤트(데이터 1개 획득) -> n번 반복
+    # 이벤트(데이터 1개 획득) -> n번 반복 -> [{}, {}, {}, ....]
     for record in event.get("Records", []):
         try:
             # 정상 데이터로 보고 추가 -> 오류발생 -> 예외처리 -> batch_failures 저장
             silver_events.append(
                 _decode_kinesis_record(record)
             )
-
         except Exception as exc:
+            # kinesis가 전달한 데이터의 sequenceNumber만 획득
             sequence_number = (
                 record.get("kinesis", {})
                 .get("sequenceNumber")
             )
 
             if sequence_number:
+                # 해당 시퀀스 번호가 있으면 저장 -> kinesis에서 조회 가능함
                 batch_failures.append(
                     {
                         "itemIdentifier": sequence_number
@@ -227,10 +228,13 @@ def lambda_handler(
                 f"[WARN] Failed to decode Silver record: {exc}"
             )
 
+    # 정상 데이터만 대상으로 집계(gold에서 최종 데이터 형태가 집계/통계형) 처리
     gold_records = _aggregate(silver_events)
 
+    # 최종 데이터(실버데이터를 비즈니스 목적에 맞게 처리)를 gold kinesis 전송
     _put_gold_records(gold_records)
 
+    # 로그
     print(
         json.dumps(
             {
@@ -242,6 +246,7 @@ def lambda_handler(
         )
     )
 
+    # 반환
     return {
         "batchItemFailures": batch_failures
     }
