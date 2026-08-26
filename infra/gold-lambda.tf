@@ -294,6 +294,10 @@ resource "aws_kinesis_firehose_delivery_stream" "gold" {
   # 의존성
   depends_on = [
     # 해당 정책 입력/출력 엑세스 권한 생성된 후에 firehose 생성되도록 설정
-    aws_iam_role_policy.firehose
+    aws_iam_role_policy.firehose_gold
+    # 글루서비스에 테이블 구성
   ]
+  tags = {
+    DataLayer = "gold"
+  }
 }
