@@ -332,6 +332,23 @@ ORDER BY event_type ASC, response.status_code DESC
 
 # 에러만 집계 (응답코드 >= 400)
 # event_type, event_type 별 개수(cnt) 출력
+# event_type에 따른 오류 응답 개수 체크
+select 
+    event_type, 
+    count(*) as cnt
+from silver_logs_tbl
+where year = '2026'
+	and month = '08'
+	and day = '25'
+	and hour = '14'
+	and response.status_code >= 400
+GROUP BY event_type
+ORDER BY cnt DESC
+
+
+# 서비스별 평균응답 시간
+# 서비스명, 응답시간 평균, 응답시간 최대값, 서비스별개수
+
 ```
 
 # 람다 코드 작성
