@@ -49,6 +49,46 @@ Silver Kinesis
          Glue / Athena -> 작업 그룹 구성 -> 대시보드/서비스에서 SQL로 데이터 획득하여 서비스에활용
 ```
 
+# 데이터 변화 확인
+- 브론즈 : 원본 raw 데이터 보존
+```
+{
+  "event_id": "evt_...",
+  "domain": "ecommerce",
+  "event_type": "payment_completed",
+  "occurred_at": "2026-08-25T18:35:00.123+09:00",
+
+  "request": {
+    "method": "POST",
+    "path": "/api/payments"
+  },
+
+  "response": {
+    "status_code": 200,
+    "latency_ms": 418
+  },
+
+  "data": {
+    "user_id": "usr_483921",
+    "session_id": "af20d91c84d24978ac31",
+    "product_id": "prd_38142",
+    "category": "electronics",
+    "quantity": 2,
+    "unit_price": 45900,
+    "currency": "KRW",
+    "campaign": "summer_sale",
+    "order_id": "ord_38ab72cf219a4182",
+    "total_amount": 91800,
+    "payment_method": "card",
+    "payment_result": "approved"
+  }
+}
+```
+- 실버
+- 골드
+
+
+
 # 인프라및 코드 구성
 - lambda/lambda_function.py 신규
 - infra/gold-lambda.py 신규
