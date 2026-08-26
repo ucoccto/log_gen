@@ -315,7 +315,23 @@ ORDER BY domain, cnt DESC
 # domain, event_type, status_code, cnt 출력
 # 집계대상은 domain, event_type, status_code
 # 정렬은 event_type ASC, status_code DESC
+select
+    domain,
+    event_type,
+    response.status_code,
+    count(*) as cnt
+from silver_logs_tbl
+where year = '2026'
+	and month = '08'
+	and day = '25'
+	and hour = '14'
+GROUP BY domain, event_type, response.status_code
+ORDER BY event_type ASC, response.status_code DESC
+;
 
+
+# 에러만 집계 (응답코드 >= 400)
+# event_type, event_type 별 개수(cnt) 출력
 ```
 
 # 람다 코드 작성
