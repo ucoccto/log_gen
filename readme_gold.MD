@@ -84,9 +84,124 @@ Silver Kinesis
   }
 }
 ```
-- 실버
-- 골드
+- 브론즈 : 오염 데이터 (보관) -> 후속 처리(원인규명)
+```
+{
+  "event_id": "evt_...",
+  "domain": "ecommerce",
+  "event_type": "payment_completed",
+  "occurred_at": "2026-08-25T18:35:01.382+09:00",
 
+  "request": {
+    "method": "POST",
+    "path": "/api/payments"
+  },
+
+  "response": {
+    "status_code": 200,
+    "latency_ms": 391
+  },
+
+  "data": {
+    "user_id": "usr_738251",
+    "session_id": "98dc15b31d2a4017a832",
+    "product_id": "prd_71632",
+    "category": "food",
+
+    "quantity": 1000000,
+
+    "unit_price": 18900,
+    "currency": "KRW",
+    "campaign": null,
+    "order_id": "ord_82ae31c20bb84081",
+    "total_amount": 18900,
+    "payment_method": "easy_pay",
+    "payment_result": "approved"
+  },
+
+  "_simulation": {
+    "is_corrupted": true,
+    "corruption_type": "numeric_outlier"
+  }
+}
+```
+- 실버
+```
+{
+  "schema_version": "1.0",
+  "record_type": "application_log",
+  "event_id": "befbbe74-c142-475e-a26b-2be5d175b273",
+  "trace_id": "aff1b4e4d10a4a589873baa3395ddba4",
+  "run_id": "loggen-1695217703-16184",
+
+  "occurred_at": "2026-08-25T14:41:53.280+09:00",
+  "generated_at_utc": "2026-08-25T05:41:53.280+00:00",
+
+  "domain": "ecommerce",
+  "event_type": "product_view",
+
+  "service": {
+    "name": "commerce-api",
+    "environment": "simulation",
+    "instance_id": "sim-07"
+  },
+
+  "client": {
+    "ip": "128.189.114.29",
+    "user_agent": "Mozilla/5.0 Chrome/151.0 Android/15",
+    "device_id": "973ee19556c34e20"
+  },
+
+  "request": {
+    "method": "GET",
+    "path": "/api/products/prd_31528",
+    "request_bytes": 147
+  },
+
+  "response": {
+    "status_code": 200,
+    "latency_ms": 57,
+    "response_bytes": 2204
+  },
+
+  "data": {
+    "user_id": "usr_366134",
+    "session_id": "0119d7b2a06f401ab8c3",
+    "product_id": "prd_31528",
+    "category": "fashion",
+    "quantity": 1,
+    "unit_price": 297200,
+    "currency": "KRW",
+
+    "campaign": null,
+    "keyword": null,
+    "result_count": null,
+    "order_id": null,
+    "total_amount": null,
+    "payment_method": null,
+    "payment_result": null
+  },
+
+  "_silver": {
+    "layer": "silver",
+    "processor": "apache-flink",
+    "schema_version": "1.0",
+    "processed_at": "2026-08-25T05:41:54.644721+00:00"
+  }
+}
+```
+- 골드
+```
+{
+  "domain": "ecommerce",
+  "category": "electronics",
+
+  "action_count": 1523,
+  "total_revenue": 28452000,
+  "avg_order": 18681,
+  "conversion_rate": 0.087
+}
+```
 
 
 # 인프라및 코드 구성
