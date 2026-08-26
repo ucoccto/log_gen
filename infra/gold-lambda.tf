@@ -71,7 +71,7 @@ data "aws_iam_policy_document" "lambda" {
 
     resources = ["arn:aws:logs:${var.aws_region}:*:*"]
   }
-  # 2. kinesis 기본 필수 권한
+  # 2. kinesis 기본 필수 권한 (silver kinesis에서 데이터를 읽어오는 권한), 입력 권한
   statement {
     effect = "Allow"
 
@@ -86,7 +86,7 @@ data "aws_iam_policy_document" "lambda" {
 
     resources = [aws_kinesis_stream.silver.arn]
   }
-  # 3. kinesis 데이터 기록(집계 결과 전송)
+  # 3. kinesis 데이터 기록(집계 결과 전송), 출력 권한
   statement {
     effect = "Allow"
 
@@ -113,6 +113,8 @@ resource "aws_lambda_function" "silver_to_gold" {
   function_name = local.gold_lambda_name
   # 역활
   role = aws_iam_role.lambda.arn
+  # 함수의 엔트리 포인트 =>  어떤 모듈의 어떤 함수를 호출하여 처리하는가
+  handler = "main.lambda_handler"
 }
 
 # Silver kinesis -> Lambda 연결
