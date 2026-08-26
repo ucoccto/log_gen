@@ -115,6 +115,30 @@ resource "aws_lambda_function" "silver_to_gold" {
   role = aws_iam_role.lambda.arn
   # 함수의 엔트리 포인트 =>  어떤 모듈의 어떤 함수를 호출하여 처리하는가
   handler = "main.lambda_handler"
+  # 파이썬 작동 -> 서버리스 -> 환경 구성되어 있어야함 (PaaS) 형태로 -> python  버전 지정
+  runtime = "python3.12"
+  # 가동시 가용 메모리
+  memory_size = 256 # MB
+  # 처리 시간 timeout 설정
+  timeout = 30
+  # 배포한 zip 경로
+  filename = local.gold_lambda_zip
+  # 업데이트 감지 -> 해시값이 바뀌면 업데이트 된것으로(소스) 간주 => 새로 배포
+  source_code_hash = filebase64sha256(local.gold_lambda_zip)
+  # 환경변수 -> lambda 함수 작동시 외부에서 전달하는 값
+  environment {
+    variables = {
+      GOLD_STREAM_NAME = aws_kinesis_stream.gold.name
+      AWS_REGION_NAME  = var.aws_region
+    }
+  }
+  # 의존성
+  depends_on = [ aws_iam_role_policy.lambda ]
+  # 태그
+  tags = {
+    DataLayer = "gold"
+    Processor = "lambda"
+  }
 }
 
 # Silver kinesis -> Lambda 연결
