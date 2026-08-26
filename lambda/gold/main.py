@@ -21,9 +21,9 @@ from typing import Any
 
 import boto3
 
-
+# gold kinesis의 이름 - 테라폼에서 환경변수로 전달했음
 GOLD_STREAM_NAME = os.environ["GOLD_STREAM_NAME"]
-
+# 기본 리전까지 추가하여 전달
 AWS_REGION = os.environ.get("AWS_REGION_NAME") or os.environ.get(
     "AWS_REGION", "ap-northeast-2"
 )
@@ -160,9 +160,14 @@ def _aggregate(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def _put_gold_records(records: list[dict[str, Any]]) -> None:
+    '''
+    최종 가공된 데이터를 gold layer로 보내기 위해, gold kinesis로 전송
+    '''
+    # 내용이 비어 있으면 컷
     if not records:
         return
 
+    # kinesis에 전송 가능한 형태로 가공
     request_records = [
         {
             "Data": (
@@ -178,6 +183,7 @@ def _put_gold_records(records: list[dict[str, Any]]) -> None:
         for record in records
     ]
 
+    # 전송
     response = kinesis.put_records(
         StreamName=GOLD_STREAM_NAME,
         Records=request_records,
