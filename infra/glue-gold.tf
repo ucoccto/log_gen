@@ -88,7 +88,7 @@ resource "aws_glue_catalog_table" "gold" {
     }
     columns {
       name = "gold_schema_version"
-      type = "struct<name:string,environment:string,instance_id:string>"
+      type = "string"
     }
   }
 
