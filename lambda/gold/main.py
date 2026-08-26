@@ -169,15 +169,20 @@ def _put_gold_records(records: list[dict[str, Any]]) -> None:
 
     # kinesis에 전송 가능한 형태로 가공
     request_records = [
+        # 리스트 컴프리 핸션으로 [ {}, {}, {}, ....]
         {
             "Data": (
+                # 직렬화 처리 dict => 문자열 변환
                 json.dumps(
                     record,
-                    ensure_ascii=False,
-                    separators=(",", ":"),
+                    ensure_ascii=False,   # 아스키가 아니면 한글, 기호 그대로 표기
+                    separators=(",", ":"), # 구분자 변경
                 )
+                # jsonl을 고려하여 줄바꿈 추가
                 + "\n"
             ).encode("utf-8"),
+            # 같은 도메인을 가진 데이터는 같은 shard로 전달할수 있게 파티션화
+            # event_type을 사용 => 같은 이베트는 같은 shard로  전달 => 확장 가능(예시)
             "PartitionKey": record["domain"],
         }
         for record in records
@@ -189,6 +194,7 @@ def _put_gold_records(records: list[dict[str, Any]]) -> None:
         Records=request_records,
     )
 
+    # 전송시 실패하면 오류 발생 -> 로그에 기록됨
     if response.get("FailedRecordCount", 0):
         raise RuntimeError(
             f"Failed to write "
