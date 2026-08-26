@@ -217,11 +217,22 @@ Silver Kinesis
 
 
 # 인프라및 코드 구성
-- lambda/lambda_function.py 신규
-- infra/gold-lambda.py 신규
-- infra/glue-gold.py 신규
-- infra/outputs.tf 내용 추가
-- lambda 서비스에 배포 작업 (필요하면 추가 파일등 고려)
+```
+silver-to-gold-lambda/
+├─ infra/
+│  ├─ gold-lambda.tf
+│  ├─ glue-gold.tf
+│  └─ outputs-gold.tf
+│
+├─ lambda/
+│  └─ gold/
+│     ├─ main.py
+│     └─ gold-lambda.zip
+│
+├─ scripts/
+│  ├─ build-gold-lambda.bat
+│  └─ build-gold-lambda.sh
+```
 
 # lambda
 - 서버에 대한 걱정 없이 코드 실행(함수 단위)
