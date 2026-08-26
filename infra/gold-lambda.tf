@@ -162,7 +162,7 @@ resource "aws_lambda_event_source_mapping" "silver_to_gold" {
 }
 
 # Firehose IAM Role
-data "aws_iam_policy_document" "firehose_assume" {
+data "aws_iam_policy_document" "firehose_gold_assume" {
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
@@ -173,24 +173,23 @@ data "aws_iam_policy_document" "firehose_assume" {
     }
   }
 }
-resource "aws_iam_role" "firehose" {
-  # role의 이름 -> 고유
-  name = "${var.project_name}-firehose-role"
-  # role에 적용되는 정책 -> 어떤 권한을 가지는가?
-  assume_role_policy = data.aws_iam_policy_document.firehose_assume.json
+resource "aws_iam_role" "firehose_gold" {
+  name = "${var.project_name}-gold-firehose-role"
+  assume_role_policy = data.aws_iam_policy_document.firehose_gold_assume.json
 }
-data "aws_iam_policy_document" "firehose_s3" {
+data "aws_iam_policy_document" "firehose_gold" {
   # kinesis 읽기 권한 관련  
   statement {
     effect = "Allow"
     actions = [
       "kinesis:DescribeStream",
+      "kinesis:DescribeStreamSummary",
       "kinesis:GetShardIterator",
       "kinesis:GetRecords",
       "kinesis:ListShards"
     ]
     resources = [
-      aws_kinesis_stream.logs.arn
+      aws_kinesis_stream.gold.arn
     ]
   }
   # s3 저장 권한 관련
@@ -207,11 +206,21 @@ data "aws_iam_policy_document" "firehose_s3" {
       "${aws_s3_bucket.data.arn}/*" # 해당 버킷 이하 모든 경로
     ]
   }
+  # Firehose JSON -> Parquet 변환 처리시 Glue Schema 읽어서 처리
+  statement {
+    effect = "Allow"
+    actions = [
+      "glue:GetTable",
+      "glue:GetTableVersion",
+      "glue:GetTableVersions"
+    ]
+    resources = ["*"]
+  }
 }
-resource "aws_iam_role_policy" "firehose" {
-  name   = "${var.project_name}-firehose-s3-policy"
-  role   = aws_iam_role.firehose.id
-  policy = data.aws_iam_policy_document.firehose_s3.json
+resource "aws_iam_role_policy" "firehose_gold" {
+  name   = "${var.project_name}-gold-firehose-policy"
+  role   = aws_iam_role.firehose_gold.id
+  policy = data.aws_iam_policy_document.firehose_gold.json
 }
 
 
