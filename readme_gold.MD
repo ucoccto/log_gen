@@ -385,9 +385,17 @@ ORDER BY avg_latency_ms DESC
 ```
 scripts/build-gold-lambda.bat
 sh ./scripts/build-gold-lambda.sh
----
-terraform -chdir=infra validate
-
-terraform -chdir=infra plan
 ```
+
+# 적용
+- 인프라 적용
+```
+terraform -chdir=infra validate
+terraform -chdir=infra plan
+terraform -chdir=infra apply
+```
+- lambda 생성 확인 (대시보드, aws 콘솔)
+- flink 실행
+- 실행확인되면 로그 발생 (1분)
+- 1분 이후 s3/버킷/골드 하위에 데이터 확인
 
